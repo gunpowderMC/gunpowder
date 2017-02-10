@@ -36,12 +36,11 @@ for (let proc in procs) {
         silent: false
     })
     procs[proc].name = proc
+    procs[proc].on('exit', (code)=>procs[proc].exit=code)
 }
 
-function killer(proc, cb, tryn = 0) {
-    try {
-        process.kill(proc.pid, 0)
-    } catch (e) {
+function killer(proc, cb, tryn = 0, dead = false) {
+    if (typeof proc.exit !== 'undefined') {
         d(`${proc.name} is dead.`)
         if(typeof cb === 'function') cb()
         return
@@ -55,7 +54,7 @@ function killer(proc, cb, tryn = 0) {
     }
     setTimeout(()=>{
         killer(proc, cb, ++tryn)
-    }, 500)
+    }, 5000)
 }
 
 function killAll(obj, cb) {
