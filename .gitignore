@@ -1,3 +1,9 @@
+# IDEA
+.idea
+
+# Nano
+*.swp
+
 # Logs
 logs
 *.log
