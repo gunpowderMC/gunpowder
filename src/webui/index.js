@@ -16,4 +16,8 @@ function d(...tt) {
     })
 }
 
-setInterval(()=>d('Hello from fork'), 500)
+['exit', 'SIGINT', 'SIGHUP', 'SIGTERM', 'uncaughtException'].forEach(signal=>process.on(signal, ()=>{
+    d('HAHA u suk')
+}))
+
+setInterval(()=>{},50000)

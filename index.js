@@ -40,7 +40,7 @@ for (let proc in procs) {
 
 function killer(proc, cb, tryn = 0) {
     try {
-        // process.kill(proc.pid, 0)
+        process.kill(proc.pid, 0)
     } catch (e) {
         d(`${proc.name} is dead.`)
         if(typeof cb === 'function') cb()
@@ -55,7 +55,7 @@ function killer(proc, cb, tryn = 0) {
     }
     setTimeout(()=>{
         killer(proc, cb, ++tryn)
-    }, 5000)
+    }, 500)
 }
 
 function killAll(obj, cb) {
