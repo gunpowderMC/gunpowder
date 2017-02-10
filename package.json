@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/gunpowderMC/gunpowder/issues"
   },
-  "homepage": "https://github.com/gunpowderMC/gunpowder#readme"
+  "homepage": "https://github.com/gunpowderMC/gunpowder#readme",
+  "devDependencies": {
+    "gentelella": "^1.3.0"
+  }
 }
