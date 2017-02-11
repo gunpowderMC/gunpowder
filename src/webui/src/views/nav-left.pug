@@ -1,0 +1,29 @@
+.col-md-3.left_col
+    .left_col.scroll-view
+        .navbar.nav_title(style='border: 0;')
+            a.site_title(href='index.html')
+                span Gunpowder
+        .clearfix
+        br
+        // sidebar menu
+        #sidebar-menu.main_menu_side.hidden-print.main_menu
+            .menu_section
+                ul.nav.side-menu
+                    li
+                        a(href='/')
+                            i.fa.fa-home
+                            | Home
+                    li
+                        a(href='/console')
+                            i.fa.fa-desktop
+                            |  Console
+        .sidebar-footer.hidden-small
+            a(data-toggle='tooltip', data-placement='top', title='Settings')
+                span.glyphicon.glyphicon-cog(aria-hidden='true')
+            a(data-toggle='tooltip', data-placement='top', title='FullScreen')
+                span.glyphicon.glyphicon-fullscreen(aria-hidden='true')
+            a(data-toggle='tooltip', data-placement='top', title='Lock')
+                span.glyphicon.glyphicon-eye-close(aria-hidden='true')
+            a(data-toggle='tooltip', data-placement='top', title='Logout')
+                span.glyphicon.glyphicon-off(aria-hidden='true')
+        // /menu footer buttons

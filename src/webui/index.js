@@ -16,8 +16,23 @@ function d(...tt) {
     })
 }
 
-['exit', 'SIGINT', 'SIGHUP', 'SIGTERM', 'uncaughtException'].forEach(signal=>process.on(signal, ()=>{
-    d('HAHA u suk')
-}))
+const express = require('express'),
+    path = require('path')
 
-setInterval(()=>{},50000)
+let app = express()
+app.use('/vendors', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'gentelella', 'vendors')))
+app.use('/', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'gentelella', 'build')))
+
+app.disable('view cache')
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'src', 'views'))
+
+app.get('/', function (req, res, next) {
+    res.render('index', {title: 'Home'})
+})
+app.get('/console', function (req, res, next) {
+    res.render('console', {title: 'Console'})
+})
+
+app.listen(8080, function () {
+})

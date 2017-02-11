@@ -12,13 +12,16 @@
  */
 
 const PROJECT_ROOT = __dirname
-
 function d(...tt) {
+    function date() {
+        let d = new Date()
+        return `[${d.getHours()}:${d.getMinutes()}:${d.getMilliseconds()}]`
+    }
     tt.forEach(t => {
-        console.log(
-            typeof t === 'object'
+        console.log(date() + ' ' +
+            (typeof t === 'object'
                 ? JSON.stringify(t, null, 2)
-                : t
+                : t)
         )
     })
 }

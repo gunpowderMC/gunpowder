@@ -1,0 +1,28 @@
+doctype html
+html(lang='en')
+    include header
+    body.nav-md
+        .container.body
+            .main_container
+                include nav-left
+                include nav-top
+                // /top navigation
+                // page content
+                .right_col(role='main')
+                    block content
+                footer
+                    .pull-right
+                        | Gunpowder server management tool
+                        a(href='https://github.com/gunpowderMC/gunpowder')
+                            i.fa.fa-github
+                    .clearfix
+        // jQuery
+        script(src='vendors/jquery/dist/jquery.min.js')
+        // Bootstrap
+        script(src='vendors/bootstrap/dist/js/bootstrap.min.js')
+        // FastClick
+        script(src='vendors/fastclick/lib/fastclick.js')
+        // NProgress
+        script(src='vendors/nprogress/nprogress.js')
+        // Custom Theme Scripts
+        script(src='js/custom.min.js')
