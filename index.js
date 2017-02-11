@@ -39,12 +39,18 @@ for (let proc in procs) {
         silent: false
     })
     procs[proc].name = proc
-    procs[proc].on('exit', (code)=>procs[proc].exit=code)
+    procs[proc].on('exit', (code) => {
+        procs[proc].exit = code
+        clearTimeout(procs[proc].killing)
+        if (typeof procs[proc].killer.func === "function") {
+            procs[proc].killer.func()
+        }
+        d(`${proc.name} is dead.`)
+    })
 }
 
 function killer(proc, cb, tryn = 0, dead = false) {
     if (typeof proc.exit !== 'undefined') {
-        d(`${proc.name} is dead.`)
         if(typeof cb === 'function') cb()
         return
     }
@@ -55,9 +61,11 @@ function killer(proc, cb, tryn = 0, dead = false) {
         d(`trying to kill ${proc.name}...`)
         proc.kill()
     }
-    setTimeout(()=>{
-        killer(proc, cb, ++tryn)
-    }, 5000)
+    proc.killer = {
+        func: killer.bind(this, proc, cb, ++tryn)
+    }
+
+    proc.killer.id = setTimeout(proc.killer.func, 500)
 }
 
 function killAll(obj, cb) {
