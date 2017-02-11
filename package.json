@@ -24,6 +24,7 @@
     "express": "^4.14.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.1.1",
+    "jquery.terminal": "^1.0.5",
     "pug": "^2.0.0-beta11"
   }
 }

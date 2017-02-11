@@ -1,3 +1,12 @@
 extends layout
+
+block head
+    link(href='css/jquery.terminal.css', rel='stylesheet')
+
+block foot-scripts
+    script(src='js/jquery.terminal.min.js')
+    script(src='js/jquery.mousewheel-min.js')
+    script(src='js/console.js')
+
 block content
-    | Please Check the Console!
+    #term
