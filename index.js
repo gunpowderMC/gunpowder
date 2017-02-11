@@ -15,7 +15,7 @@ const PROJECT_ROOT = __dirname
 function d(...tt) {
     function date() {
         let d = new Date()
-        return `[${d.getHours()}:${d.getMinutes()}:${d.getMilliseconds()}]`
+        return `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}:${d.getMilliseconds()}]`
     }
     tt.forEach(t => {
         console.log(date() + ' ' +
