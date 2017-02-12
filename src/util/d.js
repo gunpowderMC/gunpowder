@@ -7,12 +7,12 @@
  */
 
 function d(...tt) {
-    function n(n) {
-        return n.toLocaleString('en-US', {minimumIntegerDigits: 2})
+    function n(n, a = 2) {
+        return n.toLocaleString('en-US', {minimumIntegerDigits: a})
     }
     function pre() {
         let d = new Date()
-        return `[${n(d.getHours())}:${n(d.getMinutes())}:${n(d.getSeconds())}:${n(d.getMilliseconds())}]` +
+        return `[${n(d.getHours())}:${n(d.getMinutes())}:${n(d.getSeconds())}:${n(d.getMilliseconds(), 3)}]` +
             (typeof THREAD_NAME !== 'undefined'
                 ? ` [${THREAD_NAME}]`
                 : '')
