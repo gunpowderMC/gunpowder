@@ -20,7 +20,8 @@ const d = require('./src/util/d')
 const child_process = require('child_process')
 
 let procs = {
-    webui: '/src/webui'
+    webui: '/src/webui',
+    minecraft: '/src/minecraft'
     // test: './test.js'
 }
 
@@ -34,13 +35,14 @@ for (let proc in procs) {
         silent: false
     })
     procs[proc].name = proc
+    procs[proc].killer = {}
     procs[proc].on('exit', (code) => {
         procs[proc].exit = code
         clearTimeout(procs[proc].killing)
         if (typeof procs[proc].killer.func === "function") {
             procs[proc].killer.func()
         }
-        d(`${proc.name} is dead.`)
+        d(`Thread '${procs[proc].name}' is dead.`)
     })
 
     procs[proc].on('message', (msg, sendHandle) => {
@@ -63,10 +65,10 @@ function killer(proc, cb, tryn = 0, dead = false) {
         return
     }
     if (tryn >= 10) {
-        d(`trying to SIGKILL ${proc.name}...`)
+        d(`trying to SIGKILL '${proc.name}'...`)
         proc.kill('SIGKILL')
     } else {
-        d(`trying to kill ${proc.name}...`)
+        d(`trying to kill '${proc.name}'...`)
         proc.kill()
     }
     proc.killer = {
@@ -90,7 +92,9 @@ function killAll(obj, cb) {
         }
 }
 
-['exit', 'SIGINT', 'SIGHUP', 'SIGTERM', 'uncaughtException'].forEach(signal=>process.on(signal, ()=>{
+['exit', 'SIGINT', 'SIGHUP', 'SIGTERM'
+    //, 'uncaughtException'
+].forEach(signal => process.on(signal, () => {
     d(`Caught ${signal}`)
     killAll(procs, process.exit)
     process.removeAllListeners()
