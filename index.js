@@ -30,6 +30,7 @@ const child_process = require('child_process')
 
 let procs = {
     webui: './src/webui'
+    // test: './test.js'
 }
 
 for (let proc in procs) {
@@ -46,6 +47,19 @@ for (let proc in procs) {
             procs[proc].killer.func()
         }
         d(`${proc.name} is dead.`)
+    })
+
+    procs[proc].on('message', (msg, sendHandle) => {
+        if (
+            typeof msg !== "object" || Array.isArray(msg) || typeof msg.dest !== "string"
+            || typeof msg.msg !== "object"
+        ) {
+            d('Error: Invalid IPC message received: ', msg)
+        } else if (typeof procs[msg.dest] === "undefined") {
+            d('Error: Invalid IPC Destination received: ' + msg.dest)
+        } else {
+            procs[msg.dest].send(msg.msg, sendHandle)
+        }
     })
 }
 
