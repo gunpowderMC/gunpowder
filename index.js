@@ -11,8 +11,8 @@
  * - Webui
  */
 
-const PROJECT_ROOT = __dirname,
-    THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
+const PROJECT_ROOT = __dirname
+global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 
 
 function d(...tt) {

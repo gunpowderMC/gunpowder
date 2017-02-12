@@ -6,15 +6,7 @@
  * project for specific handling instructions
  */
 
-function d(...tt) {
-    tt.forEach(t=>{
-        console.log(
-            typeof t === 'object'
-                ? JSON.stringify(t, null, 2)
-                : t
-        )
-    })
-}
+global.THREAD_NAME = process.env.GP_THREAD_NAME
 
 const express = require('express'),
     path = require('path')
