@@ -13,7 +13,10 @@ const d = require('../util/d')
 const express = require('express'),
     path = require('path')
 
-let app = express()
+let app = express(),
+    server = require('http').createServer(app),
+    io = require('socket.io')(server)
+
 app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.use('/vendors', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'gentelella', 'vendors')))
@@ -50,6 +53,24 @@ app.get('/console', function (req, res, next) {
     res.render('console', {title: 'Console', notifications: notifications})
 })
 
-app.listen(8080, function () {
+server.listen(8080, function () {
     d(`Listening on 8080`)
+})
+
+process.on('message', (msg, sendHandle) => {
+    switch (msg.act) {
+        case 'console':
+            io.emit('console', msg.text)
+            break
+    }
+})
+
+io.on('connection', function (socket) {
+    socket.on('command', cmd => process.send({
+        dest: 'minecraft',
+        msg: {
+            act: 'command',
+            cmd: cmd
+        }
+    }))
 })

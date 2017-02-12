@@ -95,3 +95,13 @@ function killAll(obj, cb) {
     killAll(procs, process.exit)
     process.removeAllListeners()
 }))
+
+setInterval(() => {
+    procs.webui.emit('message', {
+        dest: 'webui',
+        msg: {
+            act: 'console',
+            text: 'Testing: ' + (new Date())
+        }
+    })
+}, 5000)

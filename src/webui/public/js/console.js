@@ -5,13 +5,18 @@
  * however please se the LICENSE file in the root of this
  * project for specific handling instructions
  */
-
-jQuery(function ($) {
-    $('#term').terminal(function (command) {
-        this.echo(command + command + command + command + command + command + command + command)
-    }, {
-        height: '75vh',
-        width: '100%',
-        onInit: t => t.clear()
-    });
-})
+window.onload = () => {
+    let socket = io()
+    jQuery(function ($) {
+        $('#term').terminal(function (command) {
+            socket.emit('command', command)
+        }, {
+            height: '75vh',
+            width: '100%',
+            greetings: false,
+            onInit: t => {
+                socket.on('console', t.echo)
+            }
+        });
+    })
+}
