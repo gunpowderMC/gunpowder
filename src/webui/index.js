@@ -22,10 +22,10 @@ const express = require('express'),
 let app = express()
 app.use('/', express.static(path.join(__dirname, 'public')))
 
-app.use('/vendors', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'gentelella', 'vendors')))
-app.use('/', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'gentelella', 'build')))
-app.use('/css', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'css')))
-app.use('/js', express.static(path.join(process.env.PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'js')))
+app.use('/vendors', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'gentelella', 'vendors')))
+app.use('/', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'gentelella', 'build')))
+app.use('/css', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'css')))
+app.use('/js', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'js')))
 
 app.disable('view cache')
 app.set('view engine', 'pug')

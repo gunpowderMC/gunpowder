@@ -11,7 +11,10 @@
  * - Webui
  */
 
-const PROJECT_ROOT = __dirname
+const PROJECT_ROOT = __dirname,
+    THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
+
+
 function d(...tt) {
     function date() {
         let d = new Date()
@@ -36,7 +39,10 @@ let procs = {
 for (let proc in procs) {
     procs[proc] = child_process.fork(procs[proc], [], {
         cwd: process.cwd(),
-        env: Object.assign({PROJECT_ROOT: PROJECT_ROOT}, process.env),
+        env: Object.assign({
+            GP_PROJECT_ROOT: PROJECT_ROOT,
+            GP_THREAD_NAME: proc
+        }, process.env),
         silent: false
     })
     procs[proc].name = proc
