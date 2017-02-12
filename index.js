@@ -19,42 +19,42 @@ const d = require('./src/util/d')
 
 const child_process = require('child_process')
 
-let procs = {
+let threads = {
     webui: '/src/webui',
     minecraft: '/src/minecraft'
     // test: './test.js'
 }
 
-for (let proc in procs) {
-    procs[proc] = child_process.fork(PROJECT_ROOT + procs[proc], [], {
+for (let thread in threads) {
+    threads[thread] = child_process.fork(PROJECT_ROOT + threads[thread], [], {
         cwd: process.cwd(),
         env: Object.assign({
             GP_PROJECT_ROOT: PROJECT_ROOT,
-            GP_THREAD_NAME: proc
+            GP_THREAD_NAME: thread
         }, process.env),
         silent: false
     })
-    procs[proc].name = proc
-    procs[proc].killer = {}
-    procs[proc].on('exit', (code) => {
-        procs[proc].exit = code
-        clearTimeout(procs[proc].killing)
-        if (typeof procs[proc].killer.func === "function") {
-            procs[proc].killer.func()
+    threads[thread].name = thread
+    threads[thread].killer = {}
+    threads[thread].on('exit', (code) => {
+        threads[thread].exit = code
+        clearTimeout(threads[thread].killing)
+        if (typeof threads[thread].killer.func === "function") {
+            threads[thread].killer.func()
         }
-        d(`Thread '${procs[proc].name}' is dead.`)
+        d(`Thread '${threads[thread].name}' is dead.`)
     })
 
-    procs[proc].on('message', (msg, sendHandle) => {
+    threads[thread].on('message', (msg, sendHandle) => {
         if (
             typeof msg !== "object" || Array.isArray(msg) || typeof msg.dest !== "string"
             || typeof msg.msg !== "object"
         ) {
             d('Error: Invalid IPC message received: ', msg)
-        } else if (typeof procs[msg.dest] === "undefined") {
+        } else if (typeof threads[msg.dest] === "undefined") {
             d('Error: Invalid IPC Destination received: ' + msg.dest)
         } else {
-            procs[msg.dest].send(msg.msg, sendHandle)
+            threads[msg.dest].send(msg.msg, sendHandle)
         }
     })
 }
@@ -82,7 +82,7 @@ function killAll(obj, cb) {
     let n=Object.keys(obj).length
     for (let proc in obj)
         if (obj.hasOwnProperty(proc)) {
-            proc = procs[proc]
+            proc = threads[proc]
             killer(proc, ()=>{
                 if(--n === 0){
                     d('Killing done')
@@ -96,12 +96,12 @@ function killAll(obj, cb) {
     //, 'uncaughtException'
 ].forEach(signal => process.on(signal, () => {
     d(`Caught ${signal}`)
-    killAll(procs, process.exit)
+    killAll(threads, process.exit)
     process.removeAllListeners()
 }))
 
 setInterval(() => {
-    procs.webui.emit('message', {
+    threads.webui.emit('message', {
         dest: 'webui',
         msg: {
             act: 'console',
