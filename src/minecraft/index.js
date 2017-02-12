@@ -8,6 +8,8 @@
 
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'minecraft'
-const d = require('../util/d')
+const d = require('../util/d'),
+    mcDownload = require('../util/minecraftDownload')
 
-d('I\'m ALIVE!!!')
+
+

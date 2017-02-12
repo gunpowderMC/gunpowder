@@ -32,7 +32,7 @@ for (let thread in threads) {
             GP_PROJECT_ROOT: PROJECT_ROOT,
             GP_THREAD_NAME: thread
         }, process.env),
-        silent: false
+        stdio: [0, 1, 2, 'ipc']
     })
     threads[thread].name = thread
     threads[thread].killer = {}
