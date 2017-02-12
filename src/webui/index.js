@@ -8,6 +8,8 @@
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME
 
+const d = require('../util/d')
+
 const express = require('express'),
     path = require('path')
 
@@ -49,4 +51,5 @@ app.get('/console', function (req, res, next) {
 })
 
 app.listen(8080, function () {
+    d(`Listening on 8080`)
 })

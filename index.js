@@ -15,19 +15,7 @@ const PROJECT_ROOT = __dirname
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 
 
-function d(...tt) {
-    function date() {
-        let d = new Date()
-        return `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}:${d.getMilliseconds()}]`
-    }
-    tt.forEach(t => {
-        console.log(date() + ' ' +
-            (typeof t === 'object'
-                ? JSON.stringify(t, null, 2)
-                : t)
-        )
-    })
-}
+const d = require('./src/util/d')
 
 const child_process = require('child_process')
 
