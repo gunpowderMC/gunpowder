@@ -20,12 +20,12 @@ const d = require('./src/util/d')
 const child_process = require('child_process')
 
 let procs = {
-    webui: './src/webui'
+    webui: '/src/webui'
     // test: './test.js'
 }
 
 for (let proc in procs) {
-    procs[proc] = child_process.fork(procs[proc], [], {
+    procs[proc] = child_process.fork(PROJECT_ROOT + procs[proc], [], {
         cwd: process.cwd(),
         env: Object.assign({
             GP_PROJECT_ROOT: PROJECT_ROOT,
