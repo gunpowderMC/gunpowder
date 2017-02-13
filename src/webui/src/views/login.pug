@@ -1,0 +1,26 @@
+//
+    login
+    This file was created on 13/02/17 by kkprince, and is
+    a part of gunpowder. This file may be proprietary,
+    however please se the LICENSE file in the root of this
+    project for specific handling instructions 
+
+doctype html
+html
+    head
+        include header
+    body.login
+        div
+            a#signup.hiddenanchor
+            a#signin.hiddenanchor
+            .login_wrapper
+                .animate.form.login_form
+                    section.login_content
+                        form(action="/login" method="post")
+                            h1 Login Form
+                            div
+                                input.form-control(type='text' placeholder='Username' name="username" required='')
+                            div
+                                input.form-control(type='password' placeholder='Password' name="password" required='')
+                            div
+                                input.btn.btn-default.submit#login(type="submit" value='Log in')
