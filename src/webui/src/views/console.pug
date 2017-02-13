@@ -2,6 +2,8 @@ extends layout
 
 block head
     link(href='css/jquery.terminal.css', rel='stylesheet')
+    script
+        | token = '#{token}'
 
 block foot-scripts
     script(src='js/jquery.terminal.min.js')

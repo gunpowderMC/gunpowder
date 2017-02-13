@@ -8,14 +8,15 @@
 
 const express = require('express'),
     path = require('path'),
-    passport = require('passport'),
-    Strategy = require('passport-local').Strategy
+    randomString = require('randomstring'),
+    jwt = require('jsonwebtoken'),
+    socketioJwt = require('socketio-jwt')
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
 
 const d = require('../util/d'),
-    secret = require('randomstring').generate()
+    secret = randomString.generate(128)
 
 let app = express(),
     server = require('http').createServer(app),
@@ -27,36 +28,7 @@ const session = require('express-session'),
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({extended: true}));
 app.use(session({secret: secret, resave: false, saveUninitialized: false, store: new NedbStore()}));
-
-passport.use(new Strategy({},
-    (username, password, cb) => {
-        d(username, password, cb)
-        cb(null, {id: 0})
-    }
-))
-
-passport.serializeUser(function (user, cb) {
-    cb(null, 0);
-});
-
-passport.deserializeUser(function (id, cb) {
-    cb(null, {id: 0});
-});
-// Initialize Passport and restore authentication state, if any, from the
-// session.
-app.use(passport.initialize());
-app.use(passport.session());
-app.post('/login', (a, b, next) => {
-        d('post');
-        next()
-    },
-    passport.authenticate('local', {failureRedirect: '/login?incorrect=true'}),
-    function (req, res) {
-        res.redirect('/');
-    }
-)
-
-
+require('./src/auth')(app)
 
 app.use('/', express.static(path.join(__dirname, 'public')))
 
@@ -87,24 +59,35 @@ let notifications = [
         message: 'A special player named DDWolfyCraft has joined the server'
     }
 ]
-
-app.get('/', function (req, res, next) {
+function ifAuth(req, res, act) {
     if (!req.user) {
         res.redirect('/login')
     } else {
-        res.render('index', {title: 'Home', notifications: notifications})
+        act()
     }
+}
+app.get('/', function (req, res, next) {
+    ifAuth(req, res, () => res.render('index', {title: 'Home', notifications: notifications}))
 })
 app.get('/login', function (req, res, next) {
     res.render('login', {title: 'Home', notifications: notifications})
 })
 app.get('/console', function (req, res, next) {
-    res.render('console', {title: 'Console', notifications: notifications})
+    ifAuth(req, res, () => res.render('console', {
+        title: 'Console',
+        notifications: notifications,
+        token: jwt.sign(req.user, secret, {expiresIn: 60 * 60 * 5})
+    }))
 })
 
 server.listen(8080, function () {
     d(`Listening on 8080`)
 })
+
+io.set('authorization', socketioJwt.authorize({
+    secret: secret,
+    handshake: true
+}))
 
 let history = []
 process.on('message', (msg, sendHandle) => {

@@ -6,7 +6,10 @@
  * project for specific handling instructions
  */
 window.onload = () => {
-    let socket = io()
+    let socket = io.connect('', {
+        query: 'token=' + token
+    })
+
     jQuery(function ($) {
         $('#term').terminal(function (command) {
             socket.emit('command', command)
