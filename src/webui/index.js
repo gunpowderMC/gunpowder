@@ -57,10 +57,13 @@ server.listen(8080, function () {
     d(`Listening on 8080`)
 })
 
+let history = []
 process.on('message', (msg, sendHandle) => {
     switch (msg.act) {
         case 'console':
             io.emit('console', msg.text)
+            history.push(msg.text)
+            if (history.length >= 500) history.shift()
             break
     }
 })
@@ -73,4 +76,5 @@ io.on('connection', function (socket) {
             cmd: cmd
         }
     }))
+    history.forEach(t => socket.emit('console', t))
 })

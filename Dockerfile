@@ -19,4 +19,6 @@ WORKDIR /workdir
 
 RUN chown 1000:1000 /app -R
 USER 1000
+EXPOSE 25565
+EXPOSE 8080
 CMD ["/usr/bin/node", "/app/index.js"]

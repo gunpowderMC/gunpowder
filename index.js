@@ -17,7 +17,8 @@ global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 
 const d = require('./src/util/d')
 
-const child_process = require('child_process')
+const child_process = require('child_process'),
+    fs = require('fs')
 
 let threads = {
     webui: '/src/webui',
@@ -26,8 +27,12 @@ let threads = {
 }
 
 for (let thread in threads) {
+    try {
+        fs.mkdirSync(thread)
+    } catch (e) {
+    }
     threads[thread] = child_process.fork(PROJECT_ROOT + threads[thread], [], {
-        cwd: process.cwd(),
+        cwd: thread,
         env: Object.assign({
             GP_PROJECT_ROOT: PROJECT_ROOT,
             GP_THREAD_NAME: thread
@@ -46,22 +51,31 @@ for (let thread in threads) {
     })
 
     threads[thread].on('message', (msg, sendHandle) => {
-        if (
-            typeof msg !== "object" || Array.isArray(msg) || typeof msg.dest !== "string"
-            || typeof msg.msg !== "object"
-        ) {
-            d('Error: Invalid IPC message received: ', msg)
-        } else if (typeof threads[msg.dest] === "undefined") {
-            d('Error: Invalid IPC Destination received: ' + msg.dest)
-        } else {
-            threads[msg.dest].send(msg.msg, sendHandle)
+        try {
+            if (
+                typeof msg !== "object" || Array.isArray(msg) || typeof msg.dest !== "string"
+                || typeof msg.msg !== "object"
+            ) {
+                d('Error: Invalid IPC message received: ', msg)
+            } else if (msg.dest === '*') {
+                Object.keys(threads).forEach(t => {
+                    //if(t!==thread)
+                    threads[t].send(msg.msg, sendHandle)
+                })
+            } else if (typeof threads[msg.dest] === "undefined") {
+                d('Error: Invalid IPC Destination received: ' + msg.dest)
+            } else {
+                threads[msg.dest].send(msg.msg, sendHandle)
+            }
+        } catch (e) {
+            d('SEVERE error occured sending IPC massage "' + e.message + '" (this can be safely ignored during shutdown)')
         }
     })
 }
 
-function killer(proc, cb, tryn = 0, dead = false) {
+function killer(proc, cb, tryn = 0) {
     if (typeof proc.exit !== 'undefined') {
-        if(typeof cb === 'function') cb()
+        if (typeof cb === 'function') cb()
         return
     }
     if (tryn >= 10) {
@@ -75,18 +89,18 @@ function killer(proc, cb, tryn = 0, dead = false) {
         func: killer.bind(this, proc, cb, ++tryn)
     }
 
-    proc.killer.id = setTimeout(proc.killer.func, 500)
+    proc.killer.id = setTimeout(proc.killer.func, 1000)
 }
 
 function killAll(obj, cb) {
-    let n=Object.keys(obj).length
+    let n = Object.keys(obj).length
     for (let proc in obj)
         if (obj.hasOwnProperty(proc)) {
             proc = threads[proc]
-            killer(proc, ()=>{
-                if(--n === 0){
+            killer(proc, () => {
+                if (--n === 0) {
                     d('Killing done')
-                    if(typeof cb === 'function') cb()
+                    if (typeof cb === 'function') cb()
                 } else d(`Killing has ${n} left`)
             })
         }
@@ -99,13 +113,3 @@ function killAll(obj, cb) {
     killAll(threads, process.exit)
     process.removeAllListeners()
 }))
-
-setInterval(() => {
-    threads.webui.emit('message', {
-        dest: 'webui',
-        msg: {
-            act: 'console',
-            text: 'Testing: ' + (new Date())
-        }
-    })
-}, 5000)
