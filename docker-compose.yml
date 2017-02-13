@@ -1,12 +1,12 @@
-version: '2'
+version: '2.1'
 services:
-#  mongod:
-#    image: mongo
-#    volumes:
-#     - ./db:/data/db
+  mongod:
+    image: mongo
+    volumes:
+     - ./db:/data/db
   gunpowder:
-#    depends_on:
-#       - mongod
+    depends_on:
+       - mongod
     build: .
     ports:
      - "25566:25565"
@@ -14,10 +14,10 @@ services:
     volumes:
      - ./work:/workdir
     environment:
-      - VIRTUAL_HOST=localhost
-      - VIRTUAL_PORT=8080
-#      - "LETSENCRYPT_HOST=${LETSENCRYPT_HOST}"
-#      - "LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}"
+     - "VIRTUAL_HOST=${HOST:-localhost}"
+     - VIRTUAL_PORT=8080
+     - "LETSENCRYPT_HOST=${HOST:-localhost}"
+     - "LETSENCRYPT_EMAIL=${EMAIL:-null@null.net}"
 
   nginx-proxy:
     volumes:
