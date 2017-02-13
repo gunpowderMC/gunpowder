@@ -1,15 +1,39 @@
 version: '2'
 services:
-  mongod:
-    image: mongo
-    volumes:
-     - ./db:/data/db
+#  mongod:
+#    image: mongo
+#    volumes:
+#     - ./db:/data/db
   gunpowder:
-    depends_on:
-       - mongod
+#    depends_on:
+#       - mongod
     build: .
     ports:
-     - "8080:8080"
      - "25566:25565"
+     - "25566:25565/udp"
     volumes:
      - ./work:/workdir
+    environment:
+      - VIRTUAL_HOST=localhost
+      - VIRTUAL_PORT=8080
+
+
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+     - ./data/conf.d:/etc/nginx/conf.d
+     - ./data/certs:/etc/nginx/certs
+
+  dockergen:
+    image: jwilder/docker-gen
+    command: -notify-sighup nginx -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    volumes_from:
+     - nginx
+    volumes:
+     - /var/run/docker.sock:/tmp/docker.sock:ro
+     - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl

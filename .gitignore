@@ -7,6 +7,7 @@
 # Testing work directories
 /work
 /db
+/data
 
 # Logs
 logs
