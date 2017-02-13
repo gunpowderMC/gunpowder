@@ -43,21 +43,21 @@ app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, 'src', 'views'))
 
 let notifications = [
-    {
-        type: 'New Player',
-        time: 'Just now',
-        message: 'A new player named _Qwop_ has joined the server'
-    },
-    {
-        type: 'Hacker Player',
-        time: '3 minutes ago',
-        message: 'A red-flagged player named Zolluc has joined the server'
-    },
-    {
-        type: 'Rare Player',
-        time: '4 hours ago',
-        message: 'A special player named DDWolfyCraft has joined the server'
-    }
+    // {
+    //     type: 'New Player',
+    //     time: 'Just now',
+    //     message: 'A new player named _Qwop_ has joined the server'
+    // },
+    // {
+    //     type: 'Hacker Player',
+    //     time: '3 minutes ago',
+    //     message: 'A red-flagged player named Zolluc has joined the server'
+    // },
+    // {
+    //     type: 'Rare Player',
+    //     time: '4 hours ago',
+    //     message: 'A special player named DDWolfyCraft has joined the server'
+    // }
 ]
 function ifAuth(req, res, act) {
     if (!req.user) {
@@ -97,6 +97,14 @@ process.on('message', (msg, sendHandle) => {
             history.push(msg.text)
             if (history.length >= 500) history.shift()
             break
+        case 'login':
+            let n = n => n.toLocaleString('en-US', {minimumIntegerDigits: 2}),
+                d = new Date()
+            notifications.push({
+                type: 'Player Joined',
+                time: `${n(d.getHours())}:${n(d.getMinutes())}`,
+                message: `${msg.user} has logged in`
+            })
     }
 })
 

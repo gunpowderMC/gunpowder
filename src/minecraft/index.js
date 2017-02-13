@@ -23,6 +23,23 @@ if (!fs.existsSync(jar)) {
 } else {
     next()
 }
+
+function checkKind(msg) {
+    let result
+    if (result = msg.match(/\[[0-9:]{8}\] \[.+?\]: ([a-zA-Z0-9_]{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?\] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)/)) {
+        return {
+            act: 'login',
+            user: result[1],
+            ip: result[2],
+            loginLocation: result[3]
+        }
+    } else {
+        return {
+            kind: 'other'
+        }
+    }
+}
+
 function next(e) {
     let mc
     if (e) throw e
@@ -49,18 +66,32 @@ function next(e) {
         })
 
         function buffOut() {
+            function sendConsole(msg) {
+                process.send({
+                    dest: '*',
+                    msg: {
+                        act: 'console',
+                        text: msg
+                    }
+                })
+            }
             let buf = ''
             return function (data) {
                 buf += data
                 const lines = buf.split('\n')
                 for (let i = 0; i < lines.length - 1; i++) {
-                    process.send({
-                        dest: '*',
-                        msg: {
-                            act: 'console',
-                            text: lines[i]
-                        }
-                    })
+                    let res = checkKind(lines[i])
+                    switch (res.act) {
+                        case 'login':
+                            sendConsole(lines[i])
+                            process.send({
+                                dest: '*',
+                                msg: res
+                            })
+                            break
+                        default:
+                            sendConsole(lines[i])
+                    }
                 }
                 buf = lines[lines.length - 1]
             }
