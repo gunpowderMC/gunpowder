@@ -10,5 +10,6 @@ services:
     build: .
     ports:
      - "8080:8080"
+     - "25566:25565"
     volumes:
      - ./work:/workdir

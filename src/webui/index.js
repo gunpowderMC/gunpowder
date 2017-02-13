@@ -23,6 +23,7 @@ app.use('/vendors', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_
 app.use('/', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'gentelella', 'build')))
 app.use('/css', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'css')))
 app.use('/js', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'js')))
+app.use('/js/keyboardevent-key-polyfill', express.static(path.join(process.env.GP_PROJECT_ROOT, 'node_modules', 'keyboardevent-key-polyfill')))
 
 app.disable('view cache')
 app.set('view engine', 'pug')
