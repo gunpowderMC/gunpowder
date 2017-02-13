@@ -11,5 +11,8 @@ global.THREAD_NAME = process.env.GP_THREAD_NAME || 'minecraft'
 const d = require('../util/d'),
     mcDownload = require('../util/minecraftDownload')
 
+const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
+    ? process.env.MINECRAFT_JAR
+    : 'minecraft.jar'
 
-
+mcDownload(jar, undefined, e => d(e ? e : 'Done Successfully'))

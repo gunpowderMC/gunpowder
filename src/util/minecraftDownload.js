@@ -75,7 +75,10 @@ function download(outFile, ver, cb) {
             return
         }
         if (chkObj(launchermetaData, '.versions')) {
-            getJson(launchermetaData.versions[launchermetaData.versions.findIndex(verP => verP.id === ver)].url, (err, mcFiles) => {
+            if (typeof ver === 'undefined' || ver === '') {
+                ver = launchermetaData.latest.release
+            }
+            getJson(launchermetaData.versions[launchermetaData.versions.findIndex(version => version.id === ver)].url, (err, mcFiles) => {
                 if (err) throw err
                 if (chkObj(mcFiles, 'mcFiles.downloads.server.url')) {
                     d('Download and parse complete. Will download jar now.')

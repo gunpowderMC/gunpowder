@@ -7,6 +7,8 @@ RUN apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -
 RUN apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install default-jre && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+
 RUN mkdir -p /workdir /app
 
 ADD package.json /app/
