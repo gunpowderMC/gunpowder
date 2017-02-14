@@ -49,6 +49,13 @@ function ifAuth(req, res, act) {
         act()
     }
 }
+
+function hasPerm(user, perm) {
+    if (typeof user.capabilities !== 'undefined') {
+        return (user.capabilities.indexOf('all') !== 1 || user.capabilities.indexOf(perm) !== 1)
+    }
+}
+
 app.get('/', function (req, res, next) {
     ifAuth(req, res, () => res.render('index', {
         title: 'Home',
@@ -64,22 +71,33 @@ app.get('/logout', function (req, res, next) {
     res.redirect('/login')
 })
 app.get('/console', function (req, res, next) {
-    ifAuth(req, res, () => res.render('console', {
-        title: 'Console',
-        user: req.user,
-        token: jwt.sign(req.user, secret, {expiresIn: 60 * 60 * 5})
-    }))
+    ifAuth(req, res, () => {
+        if (hasPerm(req.user, 'console')) {
+            res.render('console', {
+                title: 'Console',
+                user: req.user,
+                token: jwt.sign(req.user, secret, {expiresIn: 60 * 60 * 5})
+            })
+        } else {
+            res.redirect('/')
+        }
+    })
 })
 app.get('/users', function (req, res, next) {
-    db.users.find({}).then(users => {
-        ifAuth(req, res, () => res.render('users', {
-            title: 'Users',
-            user: req.user,
+    ifAuth(req, res, () => {
+        if (hasPerm(req.user, 'admin')) {
+            db.users.find({}).then(users => {
+                res.render('users', {
+                    title: 'Users',
+                    user: req.user,
 
-            users: users
-        }))
+                    users: users
+                })
+            })
+        } else {
+            res.redirect('/')
+        }
     })
-
 })
 
 

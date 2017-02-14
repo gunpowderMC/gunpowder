@@ -1,7 +1,13 @@
+-function hasPerm(perm) {
+-   if(typeof user.capabilities !== 'undefined') {
+-       return (user.capabilities.indexOf('all') !== -1 || user.capabilities.indexOf(perm) !== -1)
+-   }
+-}
+
 .col-md-3.left_col
     .left_col.scroll-view
         .navbar.nav_title(style='border: 0;')
-            a.site_title(href='index.html')
+            a.site_title(href='/')
                 span Gunpowder
         .clearfix
         // sidebar menu
@@ -12,14 +18,16 @@
                         a(href='/')
                             i.fa.fa-home
                             | Home
-                    li
-                        a(href='/console')
-                            i.fa.fa-desktop
-                            |  Console
-                    li
-                        a(href='/users')
-                            i.fa.fa-user
-                            |  Admins
+                    if hasPerm('console')
+                        li
+                            a(href='/console')
+                                i.fa.fa-desktop
+                                |  Console
+                    if hasPerm('admin')
+                        li
+                            a(href='/users')
+                                i.fa.fa-user
+                                |  Admins
         .sidebar-footer.hidden-small
             a(data-toggle='tooltip' data-placement='top' title='Settings' style='width: 50%' href='/settings')
                 span.glyphicon.glyphicon-cog(aria-hidden='true')
