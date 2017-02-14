@@ -40,7 +40,8 @@ module.exports = {
                             password: password,
                             capabilities: [
                                 'all'
-                            ]
+                            ],
+                            notifications: []
                         })
                     }
                 })

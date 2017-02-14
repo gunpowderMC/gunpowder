@@ -33,10 +33,11 @@
                 li.dropdown(role='presentation')
                     a.dropdown-toggle.info-number(href='javascript:;', data-toggle='dropdown', aria-expanded='false')
                         i.fa.fa-envelope-o
-                        if notifications.length > 0
-                            span.badge.bg-green #{notifications.length}
+                        if user.notifications
+                            if user.notifications.length > 0
+                                span.badge.bg-green #{user.notifications.length}
                     ul#menu1.dropdown-menu.list-unstyled.msg_list(role='menu')
-                        each notification in notifications
+                        each notification in user.notifications
                             li
                                 a
                                     //span.image

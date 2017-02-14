@@ -4,7 +4,6 @@
             a.site_title(href='index.html')
                 span Gunpowder
         .clearfix
-        br
         // sidebar menu
         #sidebar-menu.main_menu_side.hidden-print.main_menu
             .menu_section
@@ -17,6 +16,10 @@
                         a(href='/console')
                             i.fa.fa-desktop
                             |  Console
+                    li
+                        a(href='/users')
+                            i.fa.fa-user
+                            |  Admins
         .sidebar-footer.hidden-small
             a(data-toggle='tooltip' data-placement='top' title='Settings' style='width: 50%' href='/settings')
                 span.glyphicon.glyphicon-cog(aria-hidden='true')

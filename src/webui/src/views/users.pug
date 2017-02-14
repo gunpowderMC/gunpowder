@@ -1,0 +1,36 @@
+extends layout
+block content
+    h3 WebUI Admins
+    table.table.table-striped
+        thead
+            tr
+                th Username
+                th Enabled
+                th Actions
+        tbody
+            each user in users
+                tr
+                    td #{user.username}
+                    td
+                        if !!user.disabled
+                            span.label.label-danger Disabled
+                        else
+                            span.label.label-success Enabled
+                    td
+                        | null
+
+            //tr
+            //    th(scope='row') 1
+            //    td Mark
+            //    td Otto
+            //    td @mdo
+            //tr
+            //    th(scope='row') 2
+            //    td Jacob
+            //    td Thornton
+            //    td @fat
+            //tr
+            //    th(scope='row') 3
+            //    td Larry
+            //    td the Bird
+            //    td @twitter

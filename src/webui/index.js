@@ -11,7 +11,8 @@ const express = require('express'),
     randomString = require('randomstring'),
     jwt = require('jsonwebtoken'),
     socketioJwt = require('socketio-jwt'),
-    url = require('url')
+    url = require('url'),
+    db = require('../db')
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
@@ -68,7 +69,10 @@ function ifAuth(req, res, act) {
     }
 }
 app.get('/', function (req, res, next) {
-    ifAuth(req, res, () => res.render('index', {title: 'Home', notifications: notifications}))
+    ifAuth(req, res, () => res.render('index', {
+        title: 'Home',
+        user: req.user
+    }))
 })
 app.get('/login', function (req, res, next) {
     res.render('login', {title: 'Login', failed: !!((url.parse(req.url).query || '').match(/incorrect/))})
@@ -81,10 +85,22 @@ app.get('/logout', function (req, res, next) {
 app.get('/console', function (req, res, next) {
     ifAuth(req, res, () => res.render('console', {
         title: 'Console',
-        notifications: notifications,
+        user: req.user,
         token: jwt.sign(req.user, secret, {expiresIn: 60 * 60 * 5})
     }))
 })
+app.get('/users', function (req, res, next) {
+    db.users.find({}).then(users => {
+        ifAuth(req, res, () => res.render('users', {
+            title: 'Users',
+            user: req.user,
+
+            users: users
+        }))
+    })
+
+})
+
 
 server.listen(8080, function () {
     d(`Listening on 8080`)
