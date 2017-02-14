@@ -7,30 +7,28 @@
  */
 const d = require('../../../util/d'),
     passport = require('passport'),
-    Strategy = require('passport-local').Strategy
+    Strategy = require('passport-local').Strategy,
+    db = require('../../../db')
+db.user.createAdmin()
 module.exports = function (app) {
     passport.use(new Strategy({},
         (username, password, cb) => {
-            d(username, password, cb)
-            cb(null, {id: 0})
+            db.user.validate(username, password, res => cb(null, res))
         }
     ))
 
     passport.serializeUser(function (user, cb) {
-        cb(null, 0);
+        cb(null, user._id);
     });
 
     passport.deserializeUser(function (id, cb) {
-        cb(null, {id: 0});
+        db.user.getFromId(id, user => cb(null, user))
     });
 // Initialize Passport and restore authentication state, if any, from the
 // session.
     app.use(passport.initialize());
     app.use(passport.session());
-    app.post('/login', (a, b, next) => {
-            d('post');
-            next()
-        },
+    app.post('/login',
         passport.authenticate('local', {failureRedirect: '/login?incorrect=true'}),
         function (req, res) {
             res.redirect('/');

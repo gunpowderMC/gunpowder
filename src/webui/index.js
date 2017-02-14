@@ -67,6 +67,7 @@ function ifAuth(req, res, act) {
     }
 }
 app.get('/', function (req, res, next) {
+    d(req.user)
     ifAuth(req, res, () => res.render('index', {title: 'Home', notifications: notifications}))
 })
 app.get('/login', function (req, res, next) {
