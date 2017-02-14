@@ -9,23 +9,21 @@
 const express = require('express'),
     path = require('path'),
     randomString = require('randomstring'),
-    jwt = require('jsonwebtoken'),
-    socketioJwt = require('socketio-jwt'),
     url = require('url'),
-    db = require('../db')
+    db = require('../db'),
+    jwt = require('jsonwebtoken'),
+    session = require('express-session'),
+    NedbStore = require('nedb-session-store')(session)
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
 
-const d = require('../util/d'),
-    secret = randomString.generate(128)
+const d = require('../util/d')
+global.secret = randomString.generate(128)
 
-let app = express(),
+const app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io')(server)
-
-const session = require('express-session'),
-    NedbStore = require('nedb-session-store')(session)
+    io = require('./src/socket')(server)
 
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({extended: true}));
@@ -44,23 +42,6 @@ app.disable('view cache')
 app.set('view engine', 'pug')
 app.set('views', path.join(__dirname, 'src', 'views'))
 
-let notifications = [
-    // {
-    //     type: 'New Player',
-    //     time: 'Just now',
-    //     message: 'A new player named _Qwop_ has joined the server'
-    // },
-    // {
-    //     type: 'Hacker Player',
-    //     time: '3 minutes ago',
-    //     message: 'A red-flagged player named Zolluc has joined the server'
-    // },
-    // {
-    //     type: 'Rare Player',
-    //     time: '4 hours ago',
-    //     message: 'A special player named DDWolfyCraft has joined the server'
-    // }
-]
 function ifAuth(req, res, act) {
     if (!req.user) {
         res.redirect('/login')
@@ -104,39 +85,4 @@ app.get('/users', function (req, res, next) {
 
 server.listen(8080, function () {
     d(`Listening on 8080`)
-})
-
-io.set('authorization', socketioJwt.authorize({
-    secret: secret,
-    handshake: true
-}))
-
-let history = []
-process.on('message', (msg, sendHandle) => {
-    switch (msg.act) {
-        case 'console':
-            io.emit('console', msg.text)
-            history.push(msg.text)
-            if (history.length >= 500) history.shift()
-            break
-        case 'login':
-            let n = n => n.toLocaleString('en-US', {minimumIntegerDigits: 2}),
-                d = new Date()
-            notifications.push({
-                type: 'Player Joined',
-                time: `${n(d.getHours())}:${n(d.getMinutes())}`,
-                message: `${msg.user} has logged in`
-            })
-    }
-})
-
-io.on('connection', function (socket) {
-    socket.on('command', cmd => process.send({
-        dest: 'minecraft',
-        msg: {
-            act: 'command',
-            cmd: cmd
-        }
-    }))
-    history.forEach(t => socket.emit('console', t))
 })
