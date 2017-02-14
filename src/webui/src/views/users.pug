@@ -17,20 +17,9 @@ block content
                         else
                             span.label.label-success Enabled
                     td
-                        | null
-
-            //tr
-            //    th(scope='row') 1
-            //    td Mark
-            //    td Otto
-            //    td @mdo
-            //tr
-            //    th(scope='row') 2
-            //    td Jacob
-            //    td Thornton
-            //    td @fat
-            //tr
-            //    th(scope='row') 3
-            //    td Larry
-            //    td the Bird
-            //    td @twitter
+                        if user.username !== 'admin'
+                            a.btn.btn-danger Delete
+                        else
+                            a.btn.btn-danger(disabled="disabled") Delete
+                        a.btn.btn-warning Disable
+                        a.btn.btn-default Edit
