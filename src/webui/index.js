@@ -72,6 +72,11 @@ app.get('/', function (req, res, next) {
 app.get('/login', function (req, res, next) {
     res.render('login', {title: 'Home', notifications: notifications})
 })
+app.get('/logout', function (req, res, next) {
+    req.session.destroy(() => {
+    })
+    res.redirect('/login')
+})
 app.get('/console', function (req, res, next) {
     ifAuth(req, res, () => res.render('console', {
         title: 'Console',
