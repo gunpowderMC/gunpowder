@@ -29,7 +29,7 @@ module.exports = function (app) {
     app.use(passport.initialize());
     app.use(passport.session());
     app.post('/login',
-        passport.authenticate('local', {failureRedirect: '/login?incorrect=true'}),
+        passport.authenticate('local', {failureRedirect: '/login?incorrect'}),
         function (req, res) {
             res.redirect('/');
         }

@@ -18,6 +18,9 @@ html
                     section.login_content
                         form(action="/login" method="post")
                             h1 Login Form
+                            if failed
+                                div.alert.alert-danger(role="alert")
+                                    | Login details Incorrect
                             div
                                 input.form-control(type='text' placeholder='Username' name="username" required='')
                             div

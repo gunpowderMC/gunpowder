@@ -23,7 +23,7 @@ module.exports = {
                 username: user,
                 password: pass
             }).then(res => (!!res[0] && !res[0].disabled) ? res[0] : false).then(t => {
-                t._id = t._id.toString()
+                if (t) t._id = t._id.toString()
                 return t
             }).then(callback)
         },

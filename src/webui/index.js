@@ -10,7 +10,8 @@ const express = require('express'),
     path = require('path'),
     randomString = require('randomstring'),
     jwt = require('jsonwebtoken'),
-    socketioJwt = require('socketio-jwt')
+    socketioJwt = require('socketio-jwt'),
+    url = require('url')
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
@@ -67,11 +68,10 @@ function ifAuth(req, res, act) {
     }
 }
 app.get('/', function (req, res, next) {
-    d(req.user)
     ifAuth(req, res, () => res.render('index', {title: 'Home', notifications: notifications}))
 })
 app.get('/login', function (req, res, next) {
-    res.render('login', {title: 'Home', notifications: notifications})
+    res.render('login', {title: 'Login', failed: !!((url.parse(req.url).query || '').match(/incorrect/))})
 })
 app.get('/logout', function (req, res, next) {
     req.session.destroy(() => {
