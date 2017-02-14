@@ -18,8 +18,8 @@ block content
                             span.label.label-success Enabled
                     td
                         if user.username !== 'admin'
-                            a.btn.btn-danger Delete
+                            a.btn.btn-danger(href=`/users/delete/${user.username}`) Delete
                         else
-                            a.btn.btn-danger(disabled="disabled") Delete
-                        a.btn.btn-warning Disable
-                        a.btn.btn-default Edit
+                            a.btn.btn-danger(disabled="disabled" data-toggle="tooltip" title="You can never delete the admin user") Delete
+                        a.btn.btn-warning(href=`/users/disable/${user.username}`) Disable
+                        a.btn.btn-default(href=`/users/edit/${user.username}`) Edit

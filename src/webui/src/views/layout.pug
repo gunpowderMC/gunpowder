@@ -10,16 +10,23 @@ html(lang='en')
                 // /top navigation
                 // page content
                 .right_col(role='main', style='height: 100vh')
+                    if alerts && alerts.length > 0
+                        each alert in alerts
+                            div(class=`alert alert-dismissable alert-${alert.type}` role='alert')
+                                a.close(data-dismiss="alert" aria-label="Close")
+                                    span(aria-hidden='true') &times;
+                                strong #{alert.type}!
+                                = ' ' + alert.message
                     block content
         // jQuery
-        script(src='vendors/jquery/dist/jquery.min.js')
+        script(src='/vendors/jquery/dist/jquery.min.js')
         // Bootstrap
-        script(src='vendors/bootstrap/dist/js/bootstrap.min.js')
+        script(src='/vendors/bootstrap/dist/js/bootstrap.min.js')
         // FastClick
-        script(src='vendors/fastclick/lib/fastclick.js')
+        script(src='/vendors/fastclick/lib/fastclick.js')
         // NProgress
-        script(src='vendors/nprogress/nprogress.js')
+        script(src='/vendors/nprogress/nprogress.js')
         // Custom Theme Scripts
-        script(src='js/custom.min.js')
+        script(src='/js/custom.min.js')
 
         block foot-scripts

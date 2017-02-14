@@ -83,9 +83,11 @@ app.get('/console', function (req, res, next) {
         }
     })
 })
-app.get('/users', function (req, res, next) {
+app.get(/^\/users/, function (req, res, next) {
     ifAuth(req, res, () => {
-        if (hasPerm(req.user, 'admin')) {
+        // if (hasPerm(req.user, 'admin')) {
+        let action = req.url.split('/').slice(2)
+        if (action.length === 0) {
             db.users.find({}).then(users => {
                 res.render('users', {
                     title: 'Users',
@@ -95,8 +97,31 @@ app.get('/users', function (req, res, next) {
                 })
             })
         } else {
-            res.redirect('/')
+            switch (action[0]) {
+                case 'delete':
+                    break
+                case 'disable':
+                    break
+                case 'edit':
+                    break
+                default:
+                    db.users.find({}).then(users => {
+                        res.render('users', {
+                            title: 'Users',
+                            user: req.user,
+                            alerts: [{
+                                type: 'danger',
+                                message: `Invalid action: ${action[0]}`
+                            }],
+
+                            users: users
+                        })
+                    })
+            }
         }
+        // } else {
+        //     res.redirect('/')
+        // }
     })
 })
 
