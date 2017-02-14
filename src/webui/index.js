@@ -99,6 +99,35 @@ app.get(/^\/users/, function (req, res, next) {
         } else {
             switch (action[0]) {
                 case 'delete':
+                    if (action[1] && action[1] !== 'admin') {
+                        db.users.remove({username: action[1]}).then(() => {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'info',
+                                        message: `User Deleted: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        })
+                    } else {
+                        db.users.find({}).then(users => {
+                            res.render('users', {
+                                title: 'Users',
+                                user: req.user,
+                                alerts: [{
+                                    type: 'warning',
+                                    message: `User Invalid: ${action[1]}`
+                                }],
+
+                                users: users
+                            })
+                        })
+                    }
                     break
                 case 'disable':
                     break

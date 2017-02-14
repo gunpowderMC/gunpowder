@@ -8,18 +8,20 @@ block content
                 th Enabled
                 th Actions
         tbody
-            each user in users
+            each u in users
                 tr
-                    td #{user.username}
+                    td #{u.username}
                     td
-                        if !!user.disabled
+                        if !!u.disabled
                             span.label.label-danger Disabled
                         else
                             span.label.label-success Enabled
                     td
-                        if user.username !== 'admin'
-                            a.btn.btn-danger(href=`/users/delete/${user.username}`) Delete
+                        if u.username === 'admin'
+                            a.btn.btn-danger(disabled="disabled" data-toggle="tooltip" title="You can't delete the admin user") Delete
+                        else if u.username === user.username
+                            a.btn.btn-danger(disabled="disabled" data-toggle="tooltip" title="You can't delete yourself!") Delete
                         else
-                            a.btn.btn-danger(disabled="disabled" data-toggle="tooltip" title="You can never delete the admin user") Delete
-                        a.btn.btn-warning(href=`/users/disable/${user.username}`) Disable
-                        a.btn.btn-default(href=`/users/edit/${user.username}`) Edit
+                            a.btn.btn - danger(href =`/users/delete/${u.username}`) Delete
+                        a.btn.btn-warning(href=`/users/disable/${u.username}`) Disable
+                        a.btn.btn-default(href=`/users/edit/${u.username}`) Edit

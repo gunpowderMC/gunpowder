@@ -15,7 +15,7 @@ html(lang='en')
                             div(class=`alert alert-dismissable alert-${alert.type}` role='alert')
                                 a.close(data-dismiss="alert" aria-label="Close")
                                     span(aria-hidden='true') &times;
-                                strong #{alert.type}!
+                                //strong #{alert.type}!
                                 = ' ' + alert.message
                     block content
         // jQuery
