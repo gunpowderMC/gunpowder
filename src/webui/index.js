@@ -75,7 +75,7 @@ app.get('/', function (req, res, next) {
     }))
 })
 app.get('/login', function (req, res, next) {
-    res.render('login', {title: 'Login', failed: !!((url.parse(req.url).query || '').match(/incorrect/))})
+    res.render('login', {title: 'Login', failed: url.parse(req.url, true).query.incorrect === ''})
 })
 app.get('/logout', function (req, res, next) {
     req.session.destroy(() => {
