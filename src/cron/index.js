@@ -20,7 +20,7 @@ function reload() {
 
     db.cron.find({}).then(dbJobs => {
         dbJobs.forEach(dbJob => {
-            try {
+            if (!dbJob.disabled) try {
                 let func
                 switch (dbJob.type) {
                     case 'command':

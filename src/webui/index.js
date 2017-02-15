@@ -330,6 +330,173 @@ app.post('/settings', function (req, res) {
     })
 })
 
+app.get(/^\/crons/, function (req, res, next) {
+    ifAuth(req, res, () => {
+        if (hasPerm(req.user, 'cron')) {
+            let action = req.url.split('/').slice(2)
+            if (action.length === 0) {
+                db.cron.find({}).then(crons => {
+                    res.render('crons', {
+                        title: 'Crons',
+                        user: req.user,
+
+                        crons: crons
+                    })
+                })
+            } else {
+                switch (action[0]) {
+                    case 'delete':
+                        if (action[1]) {
+                            db.cron.remove({_id: action[1]}).then(() => {
+                                db.cron.find({}).then(crons => {
+                                    res.render('crons', {
+                                        title: 'Cron',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `Cron Deleted: ${action[1]}`
+                                        }],
+
+                                        crons: crons
+                                    })
+                                })
+                            })
+                        } else {
+                            db.cron.find({}).then(crons => {
+                                res.render('crons', {
+                                    title: 'Cron',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `Cron Invalid: ${action[1]}`
+                                    }],
+
+                                    crons: crons
+                                })
+                            })
+                        }
+                        break
+                    case 'disable':
+                        if (action[1]) {
+                            db.cron.update({_id: action[1]}, {$set: {disabled: true}}).then(() => {
+                                db.cron.find({}).then(crons => {
+                                    res.render('crons', {
+                                        title: 'Crons',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `Cron Disabled: ${action[1]}`
+                                        }],
+
+                                        crons: crons
+                                    })
+                                })
+                            })
+                        } else {
+                            db.cron.find({}).then(crons => {
+                                res.render('crons', {
+                                    title: 'Crons',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `User Invalid: ${action[1]}`
+                                    }],
+
+                                    crons: crons
+                                })
+                            })
+                        }
+                        break
+                    case 'enable':
+                        if (action[1]) {
+                            db.cron.update({_id: action[1]}, {$set: {disabled: false}}).then(() => {
+                                db.cron.find({}).then(crons => {
+                                    res.render('crons', {
+                                        title: 'Crons',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `Cron Enabled: ${action[1]}`
+                                        }],
+
+                                        crons: crons
+                                    })
+                                })
+                            })
+                        } else {
+                            db.cron.find({}).then(crons => {
+                                res.render('crons', {
+                                    title: 'Crons',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `Cron Invalid: ${action[1]}`
+                                    }],
+
+                                    crons: crons
+                                })
+                            })
+                        }
+                        break
+                    case 'edit':
+                        db.cron.find({_id: action[1]}).then(cron => {
+                            if (user.length !== 1) {
+                                db.cron.find({}).then(crons => {
+                                    res.render('crons', {
+                                        title: 'Crons',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'warning',
+                                            message: `Cron Invalid: ${action[1]}`
+                                        }],
+
+                                        crons: crons
+                                    })
+                                })
+                            } else res.render('cron', {
+                                title: 'Edit: ' + action[1],
+                                user: req.user,
+
+                                cron: cron[0],
+                                capabilities: capabilities
+                            })
+                        })
+                        break
+                    case 'new':
+                        res.render('cron', {
+                            title: 'Edit: ' + action[1],
+                            user: req.user
+                        })
+                        break
+                    default:
+                        db.cron.find({}).then(crons => {
+                            res.render('crons', {
+                                title: 'Crons',
+                                user: req.user,
+                                alerts: [{
+                                    type: 'danger',
+                                    message: `Invalid action: ${action[0]}`
+                                }],
+
+                                crons: crons
+                            })
+                        })
+                }
+            }
+        } else {
+            res.render('index', {
+                title: 'Home',
+                user: req.user,
+
+                alerts: [{
+                    type: 'danger',
+                    message: `You don't have permission to do that!`
+                }]
+            })
+        }
+    })
+})
+
 
 server.listen(8080, function () {
     d(`Listening on 8080`)
