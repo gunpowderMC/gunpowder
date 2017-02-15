@@ -1,9 +1,3 @@
--function hasPerm(perm) {
--   if(typeof user.capabilities !== 'undefined') {
--       return (user.capabilities.indexOf('all') !== -1 || user.capabilities.indexOf(perm) !== -1)
--   }
--}
-
 .col-md-3.left_col
     .left_col.scroll-view
         .navbar.nav_title(style='border: 0;')
@@ -23,11 +17,11 @@
                             a(href='/console')
                                 i.fa.fa-desktop
                                 |  Console
-                    //if hasPerm('admin')
-                    li
-                        a(href='/users')
-                            i.fa.fa-user
-                            |  Admins
+                    if hasPerm('user-admin')
+                        li
+                            a(href='/users')
+                                i.fa.fa-user
+                                |  Admins
         .sidebar-footer.hidden-small
             a(data-toggle='tooltip' data-placement='top' title='Settings' style='width: 50%' href='/settings')
                 span.glyphicon.glyphicon-cog(aria-hidden='true')

@@ -13,7 +13,15 @@ const express = require('express'),
     db = require('../db'),
     jwt = require('jsonwebtoken'),
     session = require('express-session'),
-    NedbStore = require('nedb-session-store')(session)
+    NedbStore = require('nedb-session-store')(session),
+
+    capabilities = [
+        'all',
+        'user-admin',
+        'console',
+        'watch-players',
+        'none'
+    ]
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
@@ -85,132 +93,161 @@ app.get('/console', function (req, res, next) {
 })
 app.get(/^\/users/, function (req, res, next) {
     ifAuth(req, res, () => {
-        // if (hasPerm(req.user, 'admin')) {
-        let action = req.url.split('/').slice(2)
-        if (action.length === 0) {
-            db.users.find({}).then(users => {
-                res.render('users', {
-                    title: 'Users',
-                    user: req.user,
+        if (hasPerm(req.user, 'user-admin')) {
+            let action = req.url.split('/').slice(2)
+            if (action.length === 0) {
+                db.users.find({}).then(users => {
+                    res.render('users', {
+                        title: 'Users',
+                        user: req.user,
 
-                    users: users
-                })
-            })
-        } else {
-            switch (action[0]) {
-                case 'delete':
-                    if (action[1] && action[1] !== 'admin' && action[1] !== req.user.username) {
-                        db.users.remove({username: action[1]}).then(() => {
-                            db.users.find({}).then(users => {
-                                res.render('users', {
-                                    title: 'Users',
-                                    user: req.user,
-                                    alerts: [{
-                                        type: 'info',
-                                        message: `User Deleted: ${action[1]}`
-                                    }],
-
-                                    users: users
-                                })
-                            })
-                        })
-                    } else {
-                        db.users.find({}).then(users => {
-                            res.render('users', {
-                                title: 'Users',
-                                user: req.user,
-                                alerts: [{
-                                    type: 'warning',
-                                    message: `User Invalid: ${action[1]}`
-                                }],
-
-                                users: users
-                            })
-                        })
-                    }
-                    break
-                case 'disable':
-                    if (action[1] && action[1] !== req.user.username) {
-                        db.users.update({username: action[1]}, {$set: {disabled: true}}).then(() => {
-                            db.users.find({}).then(users => {
-                                res.render('users', {
-                                    title: 'Users',
-                                    user: req.user,
-                                    alerts: [{
-                                        type: 'info',
-                                        message: `User Disabled: ${action[1]}`
-                                    }],
-
-                                    users: users
-                                })
-                            })
-                        })
-                    } else {
-                        db.users.find({}).then(users => {
-                            res.render('users', {
-                                title: 'Users',
-                                user: req.user,
-                                alerts: [{
-                                    type: 'warning',
-                                    message: `User Invalid: ${action[1]}`
-                                }],
-
-                                users: users
-                            })
-                        })
-                    }
-                    break
-                case 'enable':
-                    if (action[1]) {
-                        db.users.update({username: action[1]}, {$set: {disabled: false}}).then(() => {
-                            db.users.find({}).then(users => {
-                                res.render('users', {
-                                    title: 'Users',
-                                    user: req.user,
-                                    alerts: [{
-                                        type: 'info',
-                                        message: `User Enabled: ${action[1]}`
-                                    }],
-
-                                    users: users
-                                })
-                            })
-                        })
-                    } else {
-                        db.users.find({}).then(users => {
-                            res.render('users', {
-                                title: 'Users',
-                                user: req.user,
-                                alerts: [{
-                                    type: 'warning',
-                                    message: `User Invalid: ${action[1]}`
-                                }],
-
-                                users: users
-                            })
-                        })
-                    }
-                    break
-                case 'edit':
-                    break
-                default:
-                    db.users.find({}).then(users => {
-                        res.render('users', {
-                            title: 'Users',
-                            user: req.user,
-                            alerts: [{
-                                type: 'danger',
-                                message: `Invalid action: ${action[0]}`
-                            }],
-
-                            users: users
-                        })
+                        users: users
                     })
+                })
+            } else {
+                switch (action[0]) {
+                    case 'delete':
+                        if (action[1] && action[1] !== 'admin' && action[1] !== req.user.username) {
+                            db.users.remove({username: action[1]}).then(() => {
+                                db.users.find({}).then(users => {
+                                    res.render('users', {
+                                        title: 'Users',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `User Deleted: ${action[1]}`
+                                        }],
+
+                                        users: users
+                                    })
+                                })
+                            })
+                        } else {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `User Invalid: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        }
+                        break
+                    case 'disable':
+                        if (action[1] && action[1] !== req.user.username) {
+                            db.users.update({username: action[1]}, {$set: {disabled: true}}).then(() => {
+                                db.users.find({}).then(users => {
+                                    res.render('users', {
+                                        title: 'Users',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `User Disabled: ${action[1]}`
+                                        }],
+
+                                        users: users
+                                    })
+                                })
+                            })
+                        } else {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `User Invalid: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        }
+                        break
+                    case 'enable':
+                        if (action[1]) {
+                            db.users.update({username: action[1]}, {$set: {disabled: false}}).then(() => {
+                                db.users.find({}).then(users => {
+                                    res.render('users', {
+                                        title: 'Users',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'info',
+                                            message: `User Enabled: ${action[1]}`
+                                        }],
+
+                                        users: users
+                                    })
+                                })
+                            })
+                        } else {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'warning',
+                                        message: `User Invalid: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        }
+                        break
+                    case 'edit':
+                        db.users.find({username: action[1]}).then(user => {
+                            if (user.length !== 1) {
+                                db.users.find({}).then(users => {
+                                    res.render('users', {
+                                        title: 'Users',
+                                        user: req.user,
+                                        alerts: [{
+                                            type: 'warning',
+                                            message: `User Invalid: ${action[1]}`
+                                        }],
+
+                                        users: users
+                                    })
+                                })
+                            } else res.render('user', {
+                                title: 'Edit: ' + action[1],
+                                user: req.user,
+
+                                u: user[0],
+                                capabilities: capabilities
+                            })
+                        })
+                        break
+                    default:
+                        db.users.find({}).then(users => {
+                            res.render('users', {
+                                title: 'Users',
+                                user: req.user,
+                                alerts: [{
+                                    type: 'danger',
+                                    message: `Invalid action: ${action[0]}`
+                                }],
+
+                                users: users
+                            })
+                        })
+                }
             }
+        } else {
+            res.redirect('/')
         }
-        // } else {
-        //     res.redirect('/')
-        // }
+    })
+})
+app.post('/users/edit', function (req, res) {
+    ifAuth(req, res, () => {
+        if (hasPerm(req.user, 'user-admin')) {
+
+        }
     })
 })
 

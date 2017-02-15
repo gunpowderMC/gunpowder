@@ -1,0 +1,21 @@
+extends layout
+block content
+    form.form-horizontal(action="/users/edit" method="post")
+        h3 Edit user
+        .form-group
+            label.col-xs-2.control-label Username
+            .col-xs-10
+                input.form-control(disabled value=u.username)
+        if hasPerm('user-admin')
+            .form-group
+                label.col-xs-2.control-label(for='disabled') Disabled
+                .col-xs-10
+                    input.form-control#disabled(type='checkbox' checked=!!u.disabled)
+            .form-group
+                label.col-xs-2.control-label(for='capabilities') Capabilities
+                .col-xs-10
+                    select.form-control#capabilities(multiple)
+                        each cap in capabilities
+                            option(selected=u.capabilities.indexOf(cap) !== -1) #{cap}
+
+        input.btn.btn-default.submit#login(type="submit")
