@@ -291,7 +291,7 @@ app.post('/settings', function (req, res) {
                 update.username = req.body.u
             }
 
-            if (typeof req.body.p === 'string') update.password = req.body.p
+            if (typeof req.body.p === 'string' && req.body.p !== '') update.password = req.body.p
 
             db.users.find({username: req.body.u}).then(user => {
                 if (user.length > 1) {
