@@ -1,1 +1,28 @@
 extends layout
+block content
+    h3 Cron Jobs
+    table.table.table-striped
+        thead
+            tr
+                th Jobname
+                th Enabled
+                th Type
+                th Actions
+        tbody
+            each cron in crons
+                tr
+                    td #{cron.name}
+                    td
+                        if !!cron.disabled
+                            span.label.label-danger Disabled
+                        else
+                            span.label.label-success Enabled
+                    td
+                        case cron.type
+                            when 'command'
+                                span.label.label-default Command
+                            default
+                                span.label.label-warning Unknown
+                    td
+                        a.btn.btn-warning Disable
+                        a.btn.btn-default Edit
