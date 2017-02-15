@@ -266,8 +266,16 @@ app.get(/^\/users/, function (req, res, next) {
         }
     })
 })
+app.get('/settings', function (req, res) {
+    ifAuth(req, res, () => res.render('user', {
+        title: 'Edit: ' + req.user.username,
+        user: req.user,
+
+        u: req.user,
+        capabilities: capabilities
+    }))
+})
 app.post('/settings', function (req, res) {
-    d(req.body)
     ifAuth(req, res, () => {
         let admin = hasPerm(req.user, 'user-admin')
         if (req.user.username === req.body.u || admin) {
@@ -283,7 +291,7 @@ app.post('/settings', function (req, res) {
                 update.username = req.body.u
             }
 
-            if (typeof req.body.password === 'string') update.password = req.body.password
+            if (typeof req.body.p === 'string') update.password = req.body.p
 
             db.users.find({username: req.body.u}).then(user => {
                 if (user.length > 1) {
