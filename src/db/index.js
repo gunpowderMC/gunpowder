@@ -8,7 +8,7 @@
 
 const d = require('../util/d'),
 
-    db = require('monk')('172.18.0.2/gunpowder'),
+    db = require('monk')('mongod/gunpowder'),
     users = db.get('webui.users'),
     players = db.get('players')
 
