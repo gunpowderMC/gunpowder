@@ -230,6 +230,14 @@ app.get(/^\/users/, function (req, res, next) {
                             })
                         })
                         break
+                    case 'new':
+                        res.render('user', {
+                            title: 'Edit: ' + action[1],
+                            user: req.user,
+
+                            capabilities: capabilities
+                        })
+                        break
                     default:
                         db.users.find({}).then(users => {
                             res.render('users', {
@@ -259,9 +267,10 @@ app.get(/^\/users/, function (req, res, next) {
     })
 })
 app.post('/settings', function (req, res) {
+    d(req.body)
     ifAuth(req, res, () => {
         let admin = hasPerm(req.user, 'user-admin')
-        if (req.user.username === req.body.username || admin) {
+        if (req.user.username === req.body.u || admin) {
             let update = {}
             if (admin) {
                 if (Array.isArray(req.body.capabilities)) {
@@ -271,27 +280,30 @@ app.post('/settings', function (req, res) {
                 }
 
                 update.disabled = typeof req.body.disabled !== "undefined"
+                update.username = req.body.u
             }
 
-            db.users.find({username: req.body.username}).then(user => {
+            if (typeof req.body.password === 'string') update.password = req.body.password
+
+            db.users.find({username: req.body.u}).then(user => {
                 if (user.length > 1) {
                     res.render('index', {
                         title: 'Home',
                         user: req.user,
                         alerts: [{
                             type: 'warning',
-                            message: `User Invalid: ${req.body.username}`
+                            message: `User Invalid: ${req.body.u}`
                         }]
                     })
                 } else {
                     user = user[0]
-                    db.users.update({username: req.body.username}, {$set: Object.assign({}, userSchema, user, update)}, {upsert: true})
+                    db.users.update({username: req.body.u}, {$set: Object.assign({}, userSchema, user, update)}, {upsert: true})
                     res.render('index', {
                         title: 'Home',
                         user: req.user,
                         alerts: [{
                             type: 'info',
-                            message: `User settings updated: ${req.body.username}`
+                            message: `User settings updated: ${req.body.u}`
                         }]
                     })
                 }

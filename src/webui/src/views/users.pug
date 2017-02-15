@@ -22,7 +22,7 @@ block content
                         else if u.username === user.username
                             a.btn.btn-danger(disabled="disabled" data-toggle="tooltip" title="You can't delete yourself!") Delete
                         else
-                            a.btn.btn - danger(href =`/users/delete/${u.username}`) Delete
+                            a.btn.btn-danger(href =`/users/delete/${u.username}`) Delete
 
                         if u.username === user.username
                             a.btn.btn-warning(href=`/users/disable/${u.username}` disabled="disabled" data-toggle="tooltip" title="You can't disable yourself!") Disable
@@ -30,3 +30,4 @@ block content
                             a.btn.btn-warning(href=`/users/${u.disabled ? 'enable' : 'disable'}/${u.username}`) #{u.disabled ? 'Enable' : 'Disable'}
 
                         a.btn.btn-default(href=`/users/edit/${u.username}`) Edit
+    a.btn.btn-default(href='/users/new') New User

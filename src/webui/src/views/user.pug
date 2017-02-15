@@ -2,11 +2,24 @@ extends layout
 block content
     form.form-horizontal(action="/settings" method="post")
         h3 Edit user
+
+        - if (typeof u === 'undefined') u={username:'',password:'', capabilities:[]}
+
+        if u.username === ''
+            .form-group
+                label.col-xs-2.control-label(for='username') Username
+                .col-xs-10
+                    input.form-control#username(required name='u')
+        else
+            .form-group
+                label.col-xs-2.control-label(for='username') Username
+                .col-xs-10
+                    input.form-control#username(disabled value=u.username)
+                    input.hidden(value=u.username name='u')
         .form-group
-            label.col-xs-2.control-label(for='username') Username
+            label.col-xs-2.control-label(for='p') Password
             .col-xs-10
-                input.form-control#username(disabled value=u.username)
-                input.hidden(value=u.username name='username')
+                input.form-control#p(type='password' name='p' required=u.password === '')
         if hasPerm('user-admin')
             .form-group
                 label.col-xs-2.control-label(for='disabled') Disabled
