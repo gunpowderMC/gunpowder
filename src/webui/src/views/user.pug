@@ -1,20 +1,21 @@
 extends layout
 block content
-    form.form-horizontal(action="/users/edit" method="post")
+    form.form-horizontal(action="/settings" method="post")
         h3 Edit user
         .form-group
-            label.col-xs-2.control-label Username
+            label.col-xs-2.control-label(for='username') Username
             .col-xs-10
-                input.form-control(disabled value=u.username)
+                input.form-control#username(disabled value=u.username)
+                input.hidden(value=u.username name='username')
         if hasPerm('user-admin')
             .form-group
                 label.col-xs-2.control-label(for='disabled') Disabled
                 .col-xs-10
-                    input.form-control#disabled(type='checkbox' checked=!!u.disabled)
+                    input.form-control#disabled(type='checkbox' name='disabled' checked=!!u.disabled)
             .form-group
                 label.col-xs-2.control-label(for='capabilities') Capabilities
                 .col-xs-10
-                    select.form-control#capabilities(multiple)
+                    select.form-control#capabilities(name='capabilities' multiple)
                         each cap in capabilities
                             option(selected=u.capabilities.indexOf(cap) !== -1) #{cap}
 

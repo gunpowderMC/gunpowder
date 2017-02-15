@@ -21,7 +21,14 @@ const express = require('express'),
         'console',
         'watch-players',
         'none'
-    ]
+    ],
+    userSchema = {
+        username: '',
+        password: '',
+        capabilities: ['none'],
+        notifications: [],
+        disabled: false
+    }
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
@@ -239,14 +246,66 @@ app.get(/^\/users/, function (req, res, next) {
                 }
             }
         } else {
-            res.redirect('/')
+            res.render('index', {
+                title: 'Home',
+                user: req.user,
+
+                alerts: [{
+                    type: 'danger',
+                    message: `You don't have permission to do that!`
+                }]
+            })
         }
     })
 })
-app.post('/users/edit', function (req, res) {
+app.post('/settings', function (req, res) {
     ifAuth(req, res, () => {
-        if (hasPerm(req.user, 'user-admin')) {
+        let admin = hasPerm(req.user, 'user-admin')
+        if (req.user.username === req.body.username || admin) {
+            let update = {}
+            if (admin) {
+                if (Array.isArray(req.body.capabilities)) {
+                    update.capabilities = req.body.capabilities
+                } else {
+                    update.capabilities = [req.body.capabilities]
+                }
 
+                update.disabled = typeof req.body.disabled !== "undefined"
+            }
+
+            db.users.find({username: req.body.username}).then(user => {
+                if (user.length > 1) {
+                    res.render('index', {
+                        title: 'Home',
+                        user: req.user,
+                        alerts: [{
+                            type: 'warning',
+                            message: `User Invalid: ${req.body.username}`
+                        }]
+                    })
+                } else {
+                    user = user[0]
+                    db.users.update({username: req.body.username}, {$set: Object.assign({}, userSchema, user, update)}, {upsert: true})
+                    res.render('index', {
+                        title: 'Home',
+                        user: req.user,
+                        alerts: [{
+                            type: 'info',
+                            message: `User settings updated: ${req.body.username}`
+                        }]
+                    })
+                }
+            })
+        } else {
+            res.render('index', {
+                title: 'Home',
+                user: req.user,
+
+                alerts: [{
+                    type: 'danger',
+                    message: `You don't have permission to do that!`
+                }]
+            })
         }
     })
 })
