@@ -99,7 +99,7 @@ app.get(/^\/users/, function (req, res, next) {
         } else {
             switch (action[0]) {
                 case 'delete':
-                    if (action[1] && action[1] !== 'admin') {
+                    if (action[1] && action[1] !== 'admin' && action[1] !== req.user.username) {
                         db.users.remove({username: action[1]}).then(() => {
                             db.users.find({}).then(users => {
                                 res.render('users', {
