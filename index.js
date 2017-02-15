@@ -22,8 +22,8 @@ const child_process = require('child_process'),
 
 let threads = {
     webui: '/src/webui',
-    minecraft: '/src/minecraft'
-    // test: './test.js'
+    minecraft: '/src/minecraft',
+    cron: '/src/cron'
 }
 
 for (let thread in threads) {

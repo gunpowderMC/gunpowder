@@ -10,12 +10,14 @@ const d = require('../util/d'),
 
     db = require('monk')('mongod/gunpowder'),
     users = db.get('webui.users'),
-    players = db.get('players')
+    players = db.get('players'),
+    cron = db.get('cron')
 
 module.exports = {
     db: db,
     users: users,
     players: players,
+    cron: cron,
 
     user: {
         validate: function (user, pass, callback) {

@@ -23,15 +23,6 @@ module.exports = function (server) {
                 io.emit('console', msg.text)
                 history.push(msg.text)
                 if (history.length >= 500) history.shift()
-                break
-            case 'login':
-                let n = n => n.toLocaleString('en-US', {minimumIntegerDigits: 2}),
-                    d = new Date()
-                notifications.push({
-                    type: 'Player Joined',
-                    time: `${n(d.getHours())}:${n(d.getMinutes())}`,
-                    message: `${msg.user} has logged in`
-                })
         }
     })
 
