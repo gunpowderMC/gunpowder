@@ -130,6 +130,66 @@ app.get(/^\/users/, function (req, res, next) {
                     }
                     break
                 case 'disable':
+                    if (action[1] && action[1] !== req.user.username) {
+                        db.users.update({username: action[1]}, {$set: {disabled: true}}).then(() => {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'info',
+                                        message: `User Disabled: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        })
+                    } else {
+                        db.users.find({}).then(users => {
+                            res.render('users', {
+                                title: 'Users',
+                                user: req.user,
+                                alerts: [{
+                                    type: 'warning',
+                                    message: `User Invalid: ${action[1]}`
+                                }],
+
+                                users: users
+                            })
+                        })
+                    }
+                    break
+                case 'enable':
+                    if (action[1]) {
+                        db.users.update({username: action[1]}, {$set: {disabled: false}}).then(() => {
+                            db.users.find({}).then(users => {
+                                res.render('users', {
+                                    title: 'Users',
+                                    user: req.user,
+                                    alerts: [{
+                                        type: 'info',
+                                        message: `User Enabled: ${action[1]}`
+                                    }],
+
+                                    users: users
+                                })
+                            })
+                        })
+                    } else {
+                        db.users.find({}).then(users => {
+                            res.render('users', {
+                                title: 'Users',
+                                user: req.user,
+                                alerts: [{
+                                    type: 'warning',
+                                    message: `User Invalid: ${action[1]}`
+                                }],
+
+                                users: users
+                            })
+                        })
+                    }
                     break
                 case 'edit':
                     break
