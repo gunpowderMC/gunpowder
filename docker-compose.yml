@@ -4,7 +4,7 @@ services:
     restart: always
     image: mongo
     volumes:
-     - ./db:/data/db
+     - ./run/db:/data/db
   gunpowder:
     restart: always
     depends_on:
@@ -24,7 +24,7 @@ services:
   nginx-proxy:
     restart: always
     volumes:
-     - ./data/certs:/etc/nginx/certs:ro
+     - ./run/certs:/etc/nginx/certs:ro
      - /etc/nginx/vhost.d
      - /usr/share/nginx/html
 
@@ -40,6 +40,6 @@ services:
     volumes_from:
      - nginx-proxy
     volumes:
-     - ./data/certs:/etc/nginx/certs:rw
+     - ./run/certs:/etc/nginx/certs:rw
 
      - /var/run/docker.sock:/var/run/docker.sock:ro

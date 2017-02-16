@@ -4,10 +4,8 @@
 # Nano
 *.swp
 
-# Testing work directories
-/work
-/db
-/data
+# Work directory
+/run
 
 # Logs
 logs

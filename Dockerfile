@@ -13,5 +13,5 @@ USER 1000
 EXPOSE 25565
 EXPOSE 25565/udp
 EXPOSE 8080
-WORKDIR /app/work
+WORKDIR /app/run/work
 CMD ["/usr/bin/node", "/app/index.js"]
