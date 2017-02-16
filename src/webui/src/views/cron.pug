@@ -17,8 +17,17 @@ block content
                     - var types = ['command', 'backup']
                     each type in types
                         option(selected=cron.type === type) #{type}
-        .form-group
-            label.col-xs-3.control-label(for='command') Command
-            .col-xs-9
-                input.form-control#command(required name='command' value=(cron.command || ''))
+        #command-section
+            .form-group
+                label.col-xs-3.control-label(for='command') Command
+                .col-xs-9
+                    input.form-control#command(required name='command' value=(cron.command || ''))
+        #backup-section
+            .form-group
+                label.col-xs-3.control-label(for='backupName') Backup Name
+                .col-xs-9
+                    input.form-control#backupName(name='backupName' value=(cron.backupName || ''))
         input.btn.btn-default.submit(type="submit")
+
+block foot-scripts
+    script(src='/js/cron.js')
