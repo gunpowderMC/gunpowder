@@ -1,10 +1,12 @@
 version: '2.1'
 services:
   mongod:
+    restart: always
     image: mongo
     volumes:
      - ./db:/data/db
   gunpowder:
+    restart: always
     depends_on:
        - mongod
     build: .
@@ -20,6 +22,7 @@ services:
      - "LETSENCRYPT_EMAIL=${EMAIL:-null@null.net}"
 
   nginx-proxy:
+    restart: always
     volumes:
      - ./data/certs:/etc/nginx/certs:ro
      - /etc/nginx/vhost.d
@@ -32,6 +35,7 @@ services:
      - 443:443
 
   letsencrypt-nginx-proxy-companion:
+    restart: always
     image: jrcs/letsencrypt-nginx-proxy-companion
     volumes_from:
      - nginx-proxy
