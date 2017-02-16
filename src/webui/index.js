@@ -331,6 +331,14 @@ app.post('/settings', function (req, res) {
     })
 })
 
+function reloadCron() {
+    process.send({
+        dest: 'cron',
+        msg: {
+            act: 'reload'
+        }
+    })
+}
 app.get(/^\/cron/, function (req, res, next) {
     ifAuth(req, res, () => {
         if (hasPerm(req.user, 'cron')) {
@@ -361,6 +369,7 @@ app.get(/^\/cron/, function (req, res, next) {
                                         crons: crons
                                     })
                                 })
+                                reloadCron()
                             })
                         } else {
                             db.cron.find({}).then(crons => {
@@ -392,6 +401,7 @@ app.get(/^\/cron/, function (req, res, next) {
                                         crons: crons
                                     })
                                 })
+                                reloadCron()
                             })
                         } else {
                             db.cron.find({}).then(crons => {
@@ -423,6 +433,7 @@ app.get(/^\/cron/, function (req, res, next) {
                                         crons: crons
                                     })
                                 })
+                                reloadCron()
                             })
                         } else {
                             db.cron.find({}).then(crons => {
@@ -507,6 +518,7 @@ app.post(/^\/cron\/edit\/\w+/, function (req, res) {
             } else {
                 db.cron.update({_id: req.url.match(/^\/cron\/edit\/(\w+)/)[1]}, req.body)
             }
+            reloadCron()
             res.redirect('/cron')
         }
     })

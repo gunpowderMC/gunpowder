@@ -45,6 +45,7 @@ function reload() {
                 d('Error:', e)
             }
         })
+        d('Cron reloaded')
     })
 }
 reload()
