@@ -17,6 +17,11 @@
                             a(href='/console')
                                 i.fa.fa-desktop
                                 |  Console
+                    if hasPerm('cron')
+                        li
+                            a(href='/cron')
+                                i.fa.fa-calendar
+                                |  Cron
                     if hasPerm('user-admin')
                         li
                             a(href='/users')

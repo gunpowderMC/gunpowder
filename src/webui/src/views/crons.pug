@@ -24,5 +24,7 @@ block content
                             default
                                 span.label.label-warning Unknown
                     td
-                        a.btn.btn-warning Disable
-                        a.btn.btn-default Edit
+                        a.btn.btn-warning(href=`/cron/${cron.disabled ? 'enable' : 'disable'}/${cron._id}`) #{cron.disabled ? 'Enable' : 'Disable'}
+                        a.btn.btn-danger(href =`/cron/delete/${cron._id}`) Delete
+                        a.btn.btn-default(href=`/cron/edit/${cron._id}`) Edit
+    a.btn.btn-default(href='/cron/new') New Cron

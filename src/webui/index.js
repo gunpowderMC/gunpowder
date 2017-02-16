@@ -18,6 +18,7 @@ const express = require('express'),
     capabilities = [
         'all',
         'user-admin',
+        'cron',
         'console',
         'watch-players',
         'none'
@@ -330,7 +331,7 @@ app.post('/settings', function (req, res) {
     })
 })
 
-app.get(/^\/crons/, function (req, res, next) {
+app.get(/^\/cron/, function (req, res, next) {
     ifAuth(req, res, () => {
         if (hasPerm(req.user, 'cron')) {
             let action = req.url.split('/').slice(2)
@@ -440,7 +441,7 @@ app.get(/^\/crons/, function (req, res, next) {
                         break
                     case 'edit':
                         db.cron.find({_id: action[1]}).then(cron => {
-                            if (user.length !== 1) {
+                            if (cron.length !== 1) {
                                 db.cron.find({}).then(crons => {
                                     res.render('crons', {
                                         title: 'Crons',
@@ -465,7 +466,9 @@ app.get(/^\/crons/, function (req, res, next) {
                     case 'new':
                         res.render('cron', {
                             title: 'Edit: ' + action[1],
-                            user: req.user
+                            user: req.user,
+
+                            cron: {}
                         })
                         break
                     default:
@@ -496,7 +499,18 @@ app.get(/^\/crons/, function (req, res, next) {
         }
     })
 })
-
+app.post(/^\/cron\/edit\/\w+/, function (req, res) {
+    ifAuth(req, res, function () {
+        if (hasPerm(req.user, 'cron')) {
+            if (req.url === '/cron/edit/new') {
+                db.cron.insert(req.body)
+            } else {
+                db.cron.update({_id: req.url.match(/^\/cron\/edit\/(\w+)/)[1]}, req.body)
+            }
+            res.redirect('/cron')
+        }
+    })
+})
 
 server.listen(8080, function () {
     d(`Listening on 8080`)
