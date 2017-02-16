@@ -11,7 +11,8 @@ global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', 
 
 const db = require('../db'),
     d = require('../util/d'),
-    CronJob = require('cron').CronJob
+    CronJob = require('cron').CronJob,
+    backup = require('../backup')
 
 let jobs = []
 
@@ -24,7 +25,7 @@ function reload() {
                 let func
                 switch (dbJob.type) {
                     case 'command':
-                        func = () => {
+                        func = function () {
                             process.send({
                                 dest: 'minecraft',
                                 msg: {
@@ -34,7 +35,9 @@ function reload() {
                             })
                         }
                         break
-                    case 'exec':
+                    case 'backup':
+                        func = () => backup(dbJob.backupName)
+                        break
                     default:
                         throw new Error('Invalid type: ' + dbJob.type)
                 }

@@ -21,6 +21,8 @@ block content
                         case cron.type
                             when 'command'
                                 span.label.label-default Command
+                            when 'backup'
+                                span.label.label-default Backup
                             default
                                 span.label.label-warning Unknown
                     td

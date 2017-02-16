@@ -14,7 +14,7 @@ block content
             label.col-xs-3.control-label(for='type') Type
             .col-xs-9
                 select.form-control#type(name='type')
-                    - var types = ['command']
+                    - var types = ['command', 'backup']
                     each type in types
                         option(selected=cron.type === type) #{type}
         .form-group
