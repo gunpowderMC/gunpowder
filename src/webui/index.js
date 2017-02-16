@@ -521,6 +521,7 @@ db.getSecret(s => {
     app.post(/^\/cron\/edit\/\w+/, function (req, res) {
         ifAuth(req, res, function () {
             if (hasPerm(req.user, 'cron')) {
+                Object.assign(req.body, {disabled: typeof req.body.disabled === 'undefined' || req.body.disabled === ''})
                 if (req.url === '/cron/edit/new') {
                     db.cron.insert(req.body)
                 } else {

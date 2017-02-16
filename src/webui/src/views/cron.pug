@@ -2,6 +2,7 @@ extends layout
 block content
     form.form-horizontal(action="/cron/edit/" + (cron._id || 'new') method="post")
         h3 Edit Cron
+        input.hidden(type='checkbox' name='disabled' checked=!cron.disabled)
         .form-group
             label.col-xs-3.control-label(for='name') Name
             .col-xs-9
@@ -27,6 +28,23 @@ block content
                 label.col-xs-3.control-label(for='backupName') Backup Name
                 .col-xs-9
                     input.form-control#backupName(name='backupName' value=(cron.backupName || ''))
+            .form-group
+                h4.col-xs-3.control-label Backups to Keep
+                .col-xs-9
+                    .row
+                        label.col-xs-2.control-label(for='keep_daily') Daily
+                        .col-xs-10
+                            input.form-control#keep_daily(name='keep_daily' type='number' value=(cron.keep_daily || ''))
+                    .row
+                        label.col-xs-2.control-label(for='keep_weekly') Weekly
+                        .col-xs-10
+                            input.form-control#keep_weekly(name='keep_weekly' type='number' value=(cron.keep_weekly || ''))
+                    .row
+                        label.col-xs-2.control-label(for='keep_monthly') Monthly
+                        .col-xs-10
+                            input.form-control#keep_monthly(name='keep_monthly' type='number' value=(cron.keep_monthly || ''))
+
+
         input.btn.btn-default.submit(type="submit")
 
 block foot-scripts
