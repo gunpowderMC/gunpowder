@@ -33,7 +33,7 @@ services:
      - '/etc/ssh/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro'
      - './run/backup:/home/mc/backup'
      - './run/authorized_keys:/home/mc/.ssh/authorized_keys'
-    command: mc::1000
+    command: mc::0
   nginx-proxy:
     restart: always
     volumes:
