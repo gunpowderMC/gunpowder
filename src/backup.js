@@ -8,9 +8,57 @@
 const child_process = require('child_process'),
     path = require('path'),
     fs = require('fs'),
-    d = require('./util/d')
+    d = require('./util/d'),
+    moment = require('moment')
 
-module.exports = function (name) {
+module.exports = function (name, deletionPolicy) {
+    const backupDir = path.join(PROJECT_ROOT, 'run', 'backup'),
+        suffix = ((typeof name === "string" && name !== '') ? '-' + name : '') + '.tar.xz',
+        fileName = path.join(backupDir, (new Date()).toJSON()) + suffix
+    fs.readdir(backupDir, (err, files) => {
+        if (err) {
+            d('Error while reading directory "' + backupDir + '"')
+            return
+        }
+        let deletes = []
+
+        function escapeRegExp(str) {
+            return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        }
+
+        files.forEach(file => {
+            let fileR = file.match('^(.+)' + escapeRegExp(suffix) + '$')
+            if (fileR) {
+                let time = moment(fileR[1])
+
+                if (!isNaN(time)) {
+                    if (time.date() != 1) {
+                        if (time.day() != 0) {
+                            if (!moment().subtract(deletionPolicy.keep_daily || 7, 'days').isSameOrBefore(time)) {
+                                deletes.push(file)
+                            }
+                        } else {
+                            if (!moment().subtract(deletionPolicy.keep_weekly || 4, 'weeks').isSameOrBefore(time)) {
+                                deletes.push(file)
+                            }
+                        }
+                    } else {
+                        if (!moment().subtract(deletionPolicy.keep_monthly || 6, 'months').isSameOrBefore(time)) {
+                            deletes.push(file)
+                        }
+                    }
+                }
+            }
+        })
+        deletes.forEach(file => {
+            fs.unlink(file, e => d(!e ? `Old backup ${file} has been removed` : `Error deleting old backup ${file}`))
+            fs.unlink(file + '.sha256sum', () => {
+            })
+            fs.unlink(file + '.md5sum', () => {
+            })
+        })
+    })
+
     process.send({
         dest: 'minecraft',
         msg: {
@@ -25,8 +73,6 @@ module.exports = function (name) {
             cmd: 'save-off'
         }
     })
-    let fileName = path.join(PROJECT_ROOT, 'run', 'backup', (new Date()).toJSON() +
-            ((typeof name === "string" && name !== '') ? '-' + name : '')) + '.tar.xz'
     d('Starting backup: ' + fileName)
     child_process.spawn('/bin/tar', [
         `--exclude='${path.join(PROJECT_ROOT, 'run', 'backup')}'`,
