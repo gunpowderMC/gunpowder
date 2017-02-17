@@ -15,11 +15,13 @@ const express = require('express'),
     session = require('express-session'),
     sessionStore = require('connect-mongodb-session')(session),
 
-    capabilities = [
+    roles = [
         'all',
         'user-admin',
+        'server-mgmt',
         'cron',
         'console',
+        'staff',
         'watch-players',
         'none'
     ],
@@ -79,8 +81,15 @@ db.getSecret(s => {
         }
     }
 
+    function renderIndex(req, res, rend) {
+        if (hasPerm(req.user, 'staff')) {
+            res.render('index-staff', rend)
+        } else {
+            res.render('index', rend)
+        }
+    }
     app.get('/', function (req, res, next) {
-        ifAuth(req, res, () => res.render('index', {
+        ifAuth(req, res, () => renderIndex(req, res, {
             title: 'Home',
             user: req.user
         }))
@@ -234,7 +243,7 @@ db.getSecret(s => {
                                     user: req.user,
 
                                     u: user[0],
-                                    capabilities: capabilities
+                                    capabilities: roles
                                 })
                             })
                             break
@@ -243,7 +252,7 @@ db.getSecret(s => {
                                 title: 'Edit: ' + action[1],
                                 user: req.user,
 
-                                capabilities: capabilities
+                                capabilities: roles
                             })
                             break
                         default:
@@ -262,7 +271,7 @@ db.getSecret(s => {
                     }
                 }
             } else {
-                res.render('index', {
+                renderIndex(req, res, {
                     title: 'Home',
                     user: req.user,
 
@@ -280,7 +289,7 @@ db.getSecret(s => {
             user: req.user,
 
             u: req.user,
-            capabilities: capabilities
+            capabilities: roles
         }))
     })
     app.post('/settings', function (req, res) {
@@ -303,7 +312,7 @@ db.getSecret(s => {
 
                 db.users.find({username: req.body.u}).then(user => {
                     if (user.length > 1) {
-                        res.render('index', {
+                        renderIndex(req, res, {
                             title: 'Home',
                             user: req.user,
                             alerts: [{
@@ -314,7 +323,7 @@ db.getSecret(s => {
                     } else {
                         user = user[0]
                         db.users.update({username: req.body.u}, {$set: Object.assign({}, userSchema, user, update)}, {upsert: true})
-                        res.render('index', {
+                        renderIndex(req, res, {
                             title: 'Home',
                             user: req.user,
                             alerts: [{
@@ -325,7 +334,7 @@ db.getSecret(s => {
                     }
                 })
             } else {
-                res.render('index', {
+                renderIndex(req, res, {
                     title: 'Home',
                     user: req.user,
 
@@ -478,7 +487,7 @@ db.getSecret(s => {
                                     user: req.user,
 
                                     cron: cron[0],
-                                    capabilities: capabilities
+                                    capabilities: roles
                                 })
                             })
                             break
@@ -506,7 +515,7 @@ db.getSecret(s => {
                     }
                 }
             } else {
-                res.render('index', {
+                renderIndex(req, res, {
                     title: 'Home',
                     user: req.user,
 
@@ -529,6 +538,40 @@ db.getSecret(s => {
                 }
                 reloadCron()
                 res.redirect('/cron')
+            }
+        })
+    })
+
+    app.get(/^\/server/, (req, res) => {
+        ifAuth(req, res, function () {
+            if (hasPerm(req.user, 'server-mgmt')) {
+                switch (req.url.match(/^\/server\/(\w+)/)[1]) {
+                    case 'stop':
+                        process.send({
+                            dest: 'minecraft',
+                            msg: {
+                                act: 'stop'
+                            }
+                        })
+                        break
+                    case 'restart':
+                        process.send({
+                            dest: 'minecraft',
+                            msg: {
+                                act: 'restart'
+                            }
+                        })
+                        break
+                    case 'start':
+                        process.send({
+                            dest: 'minecraft',
+                            msg: {
+                                act: 'start'
+                            }
+                        })
+                        break
+                }
+                res.redirect('/')
             }
         })
     })

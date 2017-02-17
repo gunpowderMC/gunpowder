@@ -18,6 +18,8 @@ const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     ? process.env.MINECRAFT_JAR
     : 'minecraft.jar'
 
+let stop = false
+
 if (!fs.existsSync(jar)) {
     mcDownload(jar, undefined, next)
 } else {
@@ -61,8 +63,9 @@ function next(e) {
 
         mc.name = 'minecraft-server'
         mc.killer = {}
-        mc.on('exit', () => {
-            setTimeout(start, 1000)
+        mc.on('exit', code => {
+            mc.exit = code
+            if (!stop) setTimeout(start, 50)
         })
 
         function buffOut() {
@@ -105,6 +108,7 @@ function next(e) {
 
     function killer(proc, cb, tryn = 0) {
         if (typeof proc.exit !== 'undefined') {
+            d(`Killed '${proc.name}'`)
             if (typeof cb === 'function') cb()
             return
         }
@@ -133,7 +137,32 @@ function next(e) {
     process.on('message', (msg, sendHandle) => {
         switch (msg.act) {
             case 'command':
-                mc.stdin.write(msg.cmd + "\n")
+                try {
+                    mc.stdin.write(msg.cmd + "\n")
+                } catch (e) {
+                    d('Error sending command to server')
+                }
+                break
+            case 'stop':
+                d('Stopping server')
+                stop = true
+                killer(mc)
+                break
+            case 'start':
+                if (typeof proc.exit === 'undefined') {
+                    d('Starting server')
+                    stop = false
+                    start()
+                } else {
+                    d('Server already running!')
+                }
+                break
+            case 'restart':
+                d('Restarting server')
+                stop = true
+                killer(mc)
+                stop = false
+                start()
                 break
         }
     })

@@ -22,7 +22,7 @@ module.exports = function (server) {
             case 'console':
                 io.emit('console', msg.text)
                 history.push(msg.text)
-                if (history.length >= 500) history.shift()
+                if (history.length >= 100) history.shift()
         }
     })
 

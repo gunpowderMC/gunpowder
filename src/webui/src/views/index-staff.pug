@@ -1,0 +1,11 @@
+extends layout
+block head
+    link(href='/css/gunpowder.css', rel='stylesheet')
+block content
+    h2 Welcome #{user.username}!
+    .row
+        .col-md-2.tile-stats.float-right
+            h4 Server Management
+            a.btn.btn-danger.row.max-width.widget-btn(href='/server/stop') Stop
+            a.btn.btn-warning.row.max-width.widget-btn(href='/server/restart') Restart
+            a.btn.btn-success.row.max-width.widget-btn(href='/server/start') Start

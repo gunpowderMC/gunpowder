@@ -26,10 +26,10 @@ block content
                 .col-xs-10
                     input.form-control#disabled(type='checkbox' name='disabled' checked=!!u.disabled)
             .form-group
-                label.col-xs-2.control-label(for='capabilities') Capabilities
+                label.col-xs-2.control-label(for='roles') Capabilities
                 .col-xs-10
-                    select.form-control#capabilities(name='capabilities' multiple)
-                        each cap in capabilities
+                    select.form-control(name='roles' multiple)
+                        each cap in roles
                             option(selected=u.capabilities.indexOf(cap) !== -1) #{cap}
 
         input.btn.btn-default.submit(type="submit")
