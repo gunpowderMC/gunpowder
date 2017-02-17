@@ -28,7 +28,7 @@ const express = require('express'),
     userSchema = {
         username: '',
         password: '',
-        capabilities: ['none'],
+        roles: ['none'],
         notifications: [],
         disabled: false
     }
@@ -76,8 +76,8 @@ db.getSecret(s => {
     }
 
     function hasPerm(user, perm) {
-        if (typeof user.capabilities !== 'undefined') {
-            return (user.capabilities.indexOf('all') !== 1 || user.capabilities.indexOf(perm) !== 1)
+        if (typeof user.roles !== 'undefined') {
+            return (user.roles.indexOf('all') !== 1 || user.roles.indexOf(perm) !== 1)
         }
     }
 
@@ -243,7 +243,7 @@ db.getSecret(s => {
                                     user: req.user,
 
                                     u: user[0],
-                                    capabilities: roles
+                                    roles: roles
                                 })
                             })
                             break
@@ -252,7 +252,7 @@ db.getSecret(s => {
                                 title: 'Edit: ' + action[1],
                                 user: req.user,
 
-                                capabilities: roles
+                                roles: roles
                             })
                             break
                         default:
@@ -289,7 +289,7 @@ db.getSecret(s => {
             user: req.user,
 
             u: req.user,
-            capabilities: roles
+            roles: roles
         }))
     })
     app.post('/settings', function (req, res) {
@@ -298,10 +298,10 @@ db.getSecret(s => {
             if (req.user.username === req.body.u || admin) {
                 let update = {}
                 if (admin) {
-                    if (Array.isArray(req.body.capabilities)) {
-                        update.capabilities = req.body.capabilities
+                    if (Array.isArray(req.body.roles)) {
+                        update.roles = req.body.roles
                     } else {
-                        update.capabilities = [req.body.capabilities]
+                        update.roles = [req.body.roles]
                     }
 
                     update.disabled = typeof req.body.disabled !== "undefined"
@@ -487,7 +487,7 @@ db.getSecret(s => {
                                     user: req.user,
 
                                     cron: cron[0],
-                                    capabilities: roles
+                                    roles: roles
                                 })
                             })
                             break

@@ -1,6 +1,6 @@
 -function hasPerm(perm) {
--   if(typeof user.capabilities !== 'undefined') {
--       return (user.capabilities.indexOf('all') !== -1 || user.capabilities.indexOf(perm) !== -1)
+-   if(typeof user.roles !== 'undefined') {
+-       return (user.roles.indexOf('all') !== -1 || user.roles.indexOf(perm) !== -1)
 -   }
 -}
 doctype html
