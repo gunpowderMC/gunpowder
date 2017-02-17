@@ -59,7 +59,7 @@ module.exports = {
                         users.insert({
                             username: 'admin',
                             password: password,
-                            capabilities: [
+                            roles: [
                                 'all'
                             ],
                             notifications: []
