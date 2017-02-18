@@ -12,7 +12,8 @@ const d = require('../util/d'),
     mcDownload = require('../util/minecraftDownload'),
     fs = require('fs'),
     child_process = require('child_process'),
-    path = require('path')
+    path = require('path'),
+    db = require('../db')
 
 const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     ? process.env.MINECRAFT_JAR
@@ -28,18 +29,36 @@ if (!fs.existsSync(jar)) {
 
 function checkKind(msg) {
     let result
-    if (result = msg.match(/\[[0-9:]{8}\] \[.+?\]: ([a-zA-Z0-9_]{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?\] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)/)) {
+    if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)\)$/)) {
         return {
             act: 'login',
             user: result[1],
             ip: result[2],
             loginLocation: result[3]
         }
+    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16}) left the game$/)) {
+        return {
+            act: 'logout',
+            user: result[1]
+        }
+    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[User Authenticator #\d+\/INFO]: UUID of player (\w{3,16}) is ([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/)) {
+        return {
+            act: 'auth',
+            user: result[1],
+            uuid: result[2]
+        }
     } else {
         return {
             kind: 'other'
         }
     }
+}
+
+function send(msg) {
+    process.send({
+        dest: '*',
+        msg: msg
+    })
 }
 
 function next(e) {
@@ -65,19 +84,20 @@ function next(e) {
         mc.killer = {}
         mc.on('exit', code => {
             mc.exit = code
+            send({
+                act: 'stop'
+            })
             if (!stop) setTimeout(start, 50)
         })
 
         function buffOut() {
             function sendConsole(msg) {
-                process.send({
-                    dest: '*',
-                    msg: {
-                        act: 'console',
-                        text: msg
-                    }
+                send({
+                    act: 'console',
+                    text: msg
                 })
             }
+
             let buf = ''
             return function (data) {
                 buf += data
@@ -87,10 +107,11 @@ function next(e) {
                     switch (res.act) {
                         case 'login':
                             sendConsole(lines[i])
-                            process.send({
-                                dest: '*',
-                                msg: res
-                            })
+                            send(res)
+                            break
+                        case 'auth':
+                            sendConsole(lines[i])
+                            send(res)
                             break
                         default:
                             sendConsole(lines[i])
@@ -101,6 +122,9 @@ function next(e) {
         }
 
         d('Minecraft Started')
+        send({
+            act: 'start'
+        })
         return mc
     }
 
