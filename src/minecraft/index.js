@@ -17,7 +17,17 @@ const d = require('../util/d'),
 
 const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     ? process.env.MINECRAFT_JAR
-    : 'minecraft.jar'
+        : 'minecraft.jar',
+    playerSchema = {
+        uuid: '',
+        username: '',
+        usernames: [],
+        password: undefined,
+        roles: ['none'],
+        notifications: [],
+        homes: [],
+        disabled: false
+    }
 
 let stop = false
 
@@ -29,10 +39,16 @@ if (!fs.existsSync(jar)) {
 
 function checkKind(msg) {
     let result
-    if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)\)$/)) {
+    if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[User Authenticator #\d+\/INFO]: UUID of player (\w{3,16}) is ([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/)) {
+        return {
+            act: 'auth',
+            username: result[1],
+            uuid: result[2]
+        }
+    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)\)$/)) {
         return {
             act: 'login',
-            user: result[1],
+            username: result[1],
             ip: result[2],
             loginLocation: result[3]
         }
@@ -40,12 +56,6 @@ function checkKind(msg) {
         return {
             act: 'logout',
             user: result[1]
-        }
-    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[User Authenticator #\d+\/INFO]: UUID of player (\w{3,16}) is ([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/)) {
-        return {
-            act: 'auth',
-            user: result[1],
-            uuid: result[2]
         }
     } else {
         return {
@@ -98,18 +108,48 @@ function next(e) {
                 })
             }
 
-            let buf = ''
+            let buf = '',
+                auths = []
             return function (data) {
                 buf += data
                 const lines = buf.split('\n')
                 for (let i = 0; i < lines.length - 1; i++) {
                     let res = checkKind(lines[i])
                     switch (res.act) {
-                        case 'login':
+                        case 'auth':
+                            auths.push(res)
                             sendConsole(lines[i])
                             send(res)
                             break
-                        case 'auth':
+                        case 'login':
+                            let thisAuth
+                            auths.forEach((auth, index) => {
+                                if (auth.username === res.username) thisAuth = auths.splice(index, 1)[0]
+                            })
+                            if (typeof thisAuth !== "undefined") {
+                                db.players.find({uuid: thisAuth.uuid}).then(user => {
+                                    if (user.length === 1) {
+                                        user = user[0]
+                                        if (user.username !== res.user) {
+                                            send({
+                                                act: 'playerNameChange',
+                                                newName: res.username,
+                                                oldName: user.username,
+                                                uuid: user.uuid
+                                            })
+                                            user.usernames.push(user.username)
+                                        }
+                                    } else {
+                                        user = {
+                                            uuid: thisAuth.uuid,
+                                            username: res.username
+                                        }
+                                    }
+                                    db.players.update({uuid: thisAuth.uuid}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
+                                })
+                            } else {
+                                d("WTF. USER LOGGED IN WITHOUT AUTH. HELP.")
+                            }
                             sendConsole(lines[i])
                             send(res)
                             break

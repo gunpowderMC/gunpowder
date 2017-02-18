@@ -59,8 +59,7 @@ for (let thread in threads) {
                 d('Error: Invalid IPC message received: ', msg)
             } else if (msg.dest === '*') {
                 Object.keys(threads).forEach(t => {
-                    //if(t!==thread)
-                    threads[t].send(msg.msg, sendHandle)
+                    if (t !== thread) threads[t].send(msg.msg, sendHandle)
                 })
             } else if (typeof threads[msg.dest] === "undefined") {
                 d('Error: Invalid IPC Destination received: ' + msg.dest)

@@ -27,7 +27,7 @@ const express = require('express'),
     ],
     userSchema = {
         username: '',
-        password: '',
+        password: undefined,
         roles: ['none'],
         notifications: [],
         disabled: false
