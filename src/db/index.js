@@ -9,15 +9,13 @@
 const d = require('../util/d'),
 
     db = require('monk')('mongod/gunpowder'),
-    users = db.get('webui.users'),
-    players = db.get('players'),
+    users = db.get('users'),
     cron = db.get('cron'),
     conf = db.get('conf')
 
 module.exports = {
     db: db,
     users: users,
-    players: players,
     cron: cron,
     conf: conf,
 
@@ -51,19 +49,18 @@ module.exports = {
         getFromId: function (id, callback) {
             return users.find(id).then(res => !!res[0] ? res[0] : false).then(callback)
         },
-        createAdmin: function (password = require('randomstring').generate(12)) {
+        createAdmin: function (schema, password = require('randomstring').generate(12)) {
             users.find({username: 'admin'}).then(res => !!res[0] ? res[0]._id : false)
                 .then(user => {
                     if (!user) {
                         d(`Creating a admin user with password: ${password}`)
-                        users.insert({
+                        users.insert(Object.assign({}, schema, {
                             username: 'admin',
                             password: password,
                             roles: [
                                 'all'
-                            ],
-                            notifications: []
-                        })
+                            ]
+                        }))
                     }
                 })
         }

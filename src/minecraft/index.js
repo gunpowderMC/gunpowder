@@ -26,7 +26,8 @@ const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
         roles: ['none'],
         notifications: [],
         homes: [],
-        disabled: false
+        disabled: false,
+        player: true
     }
 
 let stop = false
@@ -127,7 +128,7 @@ function next(e) {
                                 if (auth.username === res.username) thisAuth = auths.splice(index, 1)[0]
                             })
                             if (typeof thisAuth !== "undefined") {
-                                db.players.find({uuid: thisAuth.uuid}).then(user => {
+                                db.users.find({uuid: thisAuth.uuid}).then(user => {
                                     if (user.length === 1) {
                                         user = user[0]
                                         if (user.username !== res.user) {
@@ -145,7 +146,7 @@ function next(e) {
                                             username: res.username
                                         }
                                     }
-                                    db.players.update({uuid: thisAuth.uuid}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
+                                    db.users.update({uuid: thisAuth.uuid}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
                                 })
                             } else {
                                 d("WTF. USER LOGGED IN WITHOUT AUTH. HELP.")

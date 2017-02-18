@@ -24,13 +24,14 @@ const express = require('express'),
         'staff',
         'watch-players',
         'none'
-    ],
-    userSchema = {
+    ]
+global.userSchema = {
         username: '',
         password: undefined,
         roles: ['none'],
         notifications: [],
-        disabled: false
+    disabled: false,
+    player: false
     }
 
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'

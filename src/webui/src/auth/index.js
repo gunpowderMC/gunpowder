@@ -9,7 +9,7 @@ const d = require('../../../util/d'),
     passport = require('passport'),
     Strategy = require('passport-local').Strategy,
     db = require('../../../db')
-db.user.createAdmin()
+db.user.createAdmin(userSchema)
 module.exports = function (app) {
     passport.use(new Strategy({},
         (username, password, cb) => {
