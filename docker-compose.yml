@@ -3,6 +3,8 @@ services:
   mongod:
     restart: always
     image: mongo
+    ports:
+     - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     volumes:
      - ./run/db:/data/db
   gunpowder:
