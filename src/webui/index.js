@@ -37,7 +37,8 @@ global.userSchema = {
 global.THREAD_NAME = process.env.GP_THREAD_NAME || 'main'
 global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', '..')
 
-const d = require('../util/d')
+const d = require('../util/d'),
+    commWatch = new (require('./src/commWatch'))
 
 db.getSecret(s => {
     global.secret = s
@@ -84,7 +85,7 @@ db.getSecret(s => {
 
     function renderIndex(req, res, rend) {
         if (hasPerm(req.user, 'staff')) {
-            res.render('index-staff', rend)
+            res.render('index-staff', Object.assign({players: commWatch.players}, rend))
         } else {
             res.render('index', rend)
         }

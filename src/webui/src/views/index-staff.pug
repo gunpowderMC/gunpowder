@@ -4,7 +4,14 @@ block head
 block content
     h2 Welcome #{user.username}!
     .row
-        .col-md-2.tile-stats.float-right
+        .col-md-2.tile-stats
+            h4 Online Players
+            ul
+                each player in players
+                    li #{player}
+
+
+        .col-md-2.tile-stats
             h4 Server Management
             a.btn.btn-danger.row.max-width.widget-btn(href='/server/stop') Stop
             a.btn.btn-warning.row.max-width.widget-btn(href='/server/restart') Restart

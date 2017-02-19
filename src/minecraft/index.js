@@ -31,32 +31,38 @@ const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     }
 
 let stop = false
-
+let players = 0
 if (!fs.existsSync(jar)) {
     mcDownload(jar, undefined, next)
 } else {
     next()
 }
-
 function checkKind(msg) {
     let result
     if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[User Authenticator #\d+\/INFO]: UUID of player (\w{3,16}) is ([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/)) {
+        // Player Authed
         return {
             act: 'auth',
             username: result[1],
             uuid: result[2]
         }
     } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)\)$/)) {
+        // Player Login
         return {
             act: 'login',
             username: result[1],
             ip: result[2],
-            loginLocation: result[3]
+            loginLocation: result[3],
+
+            totalPlayers: ++players
         }
     } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16}) left the game$/)) {
+        // Player Logout
         return {
             act: 'logout',
-            user: result[1]
+            username: result[1],
+
+            totalPlayers: --players
         }
     } else {
         return {
@@ -76,6 +82,7 @@ function next(e) {
     let mc
     if (e) throw e
     function start() {
+        players = 0
         mc = child_process.spawn(
             path.join(process.env.JAVA_HOME, "bin", "java"),
             [
@@ -98,6 +105,7 @@ function next(e) {
             send({
                 act: 'stop'
             })
+            players = 0
             if (!stop) setTimeout(start, 50)
         })
 
