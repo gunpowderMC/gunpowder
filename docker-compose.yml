@@ -7,6 +7,8 @@ services:
      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     volumes:
      - ./run/db:/data/db
+    group_add:
+     - users
   gunpowder:
     restart: always
     depends_on:
@@ -22,6 +24,8 @@ services:
      - VIRTUAL_PORT=8080
      - "LETSENCRYPT_HOST=${HOST:-localhost}"
      - "LETSENCRYPT_EMAIL=${EMAIL:-null@null.net}"
+    group_add:
+     - users
   sftp:
     image: atmoz/sftp
     restart: always
@@ -35,7 +39,9 @@ services:
      - '/etc/ssh/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro'
      - './run/backup:/home/mc/backup'
      - './run/authorized_keys:/home/mc/.ssh/authorized_keys'
-    command: mc::0
+    command: mc::1000
+    group_add:
+     - users
   nginx-proxy:
     restart: always
     volumes:
@@ -48,7 +54,8 @@ services:
     ports:
      - 80:80
      - 443:443
-
+    group_add:
+     - users
   letsencrypt-nginx-proxy-companion:
     restart: always
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -58,3 +65,5 @@ services:
      - ./run/certs:/etc/nginx/certs:rw
 
      - /var/run/docker.sock:/var/run/docker.sock:ro
+    group_add:
+     - users
