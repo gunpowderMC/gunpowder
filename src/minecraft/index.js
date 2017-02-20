@@ -31,7 +31,7 @@ const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     }
 
 let stop = false
-let players = 0
+let players = []
 if (!fs.existsSync(jar)) {
     mcDownload(jar, undefined, next)
 } else {

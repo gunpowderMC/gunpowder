@@ -5,7 +5,8 @@
  * however please se the LICENSE file in the root of this
  * project for specific handling instructions
  */
-const EventEmitter = require('events').EventEmitter
+const EventEmitter = require('events').EventEmitter,
+    d = require('../../../util/d')
 module.exports = class extends EventEmitter {
     constructor() {
         super()
@@ -17,7 +18,7 @@ module.exports = class extends EventEmitter {
                     break
                 case 'logout':
                     this.players.forEach((player, index) => {
-                        if (player.username === msg.username) this.players.splice(index, 1)
+                        if (player === msg.username) this.players.splice(index, 1)
                     })
                     break
                 case 'start':
