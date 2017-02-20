@@ -238,3 +238,5 @@ function next(e) {
     })
 }
 
+setInterval(() => {
+}, 1000000000)
