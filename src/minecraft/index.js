@@ -204,6 +204,10 @@ function next(e) {
         process.removeAllListeners()
     }))
 
+    setInterval(() => {
+        // keep proc alive
+    }, 1000000000)
+
     process.on('message', (msg, sendHandle) => {
         switch (msg.act) {
             case 'command':
@@ -219,7 +223,7 @@ function next(e) {
                 killer(mc)
                 break
             case 'start':
-                if (typeof proc.exit === 'undefined') {
+                if (typeof mc.exit !== 'undefined') {
                     d('Starting server')
                     stop = false
                     start()
@@ -238,5 +242,3 @@ function next(e) {
     })
 }
 
-setInterval(() => {
-}, 1000000000)
