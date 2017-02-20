@@ -18,20 +18,11 @@ const d = require('../util/d'),
 const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
     ? process.env.MINECRAFT_JAR
         : 'minecraft.jar',
-    playerSchema = {
-        uuid: '',
-        username: '',
-        usernames: [],
-        password: undefined,
-        roles: ['none'],
-        notifications: [],
-        homes: [],
-        disabled: false,
-        player: true
-    }
+    playerSchema = require('../db/schema').Player
 
-let stop = false
-let players = []
+let stop = false,
+    players = [],
+    uuidCache = {}
 if (!fs.existsSync(jar)) {
     mcDownload(jar, undefined, next)
 } else {
@@ -41,6 +32,7 @@ function checkKind(msg) {
     let result
     if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[User Authenticator #\d+\/INFO]: UUID of player (\w{3,16}) is ([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/)) {
         // Player Authed
+        uuidCache[result[1]] = result[2]
         return {
             act: 'auth',
             username: result[1],
@@ -53,14 +45,18 @@ function checkKind(msg) {
             username: result[1],
             ip: result[2],
             loginLocation: result[3],
+            uuid: uuidCache[result[1]],
 
             totalPlayers: ++players
         }
     } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16}) left the game$/)) {
         // Player Logout
+        let uuid = uuidCache[result[1]]
+        delete uuidCache[result[1]]
         return {
             act: 'logout',
             username: result[1],
+            uuid: uuid,
 
             totalPlayers: --players
         }
@@ -125,6 +121,7 @@ function next(e) {
                 for (let i = 0; i < lines.length - 1; i++) {
                     let res = checkKind(lines[i])
                     switch (res.act) {
+                        case 'logout':
                         case 'auth':
                             auths.push(res)
                             sendConsole(lines[i])
@@ -139,7 +136,7 @@ function next(e) {
                                 db.users.find({uuid: thisAuth.uuid}).then(user => {
                                     if (user.length === 1) {
                                         user = user[0]
-                                        if (user.username !== res.user) {
+                                        if (user.username !== res.username) {
                                             send({
                                                 act: 'playerNameChange',
                                                 newName: res.username,

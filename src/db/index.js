@@ -11,13 +11,15 @@ const d = require('../util/d'),
     db = require('monk')('mongod/gunpowder'),
     users = db.get('users'),
     cron = db.get('cron'),
-    conf = db.get('conf')
+    conf = db.get('conf'),
+    times = db.get('times')
 
 module.exports = {
     db: db,
     users: users,
     cron: cron,
     conf: conf,
+    times: times,
 
     getSecret: function (cb) {
         conf.find({type: 'secret'}).then(secret => {

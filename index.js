@@ -23,9 +23,10 @@ const child_process = require('child_process'),
 let threads = {
     webui: '/src/webui',
     minecraft: '/src/minecraft',
-    cron: '/src/cron'
+    cron: '/src/cron',
+    dataRecorder: '/src/dataRecorder'
 }
-
+// let port = process.execArgv[0].split('=')[1]
 for (let thread in threads) {
     try {
         fs.mkdirSync(thread)
@@ -37,7 +38,10 @@ for (let thread in threads) {
             GP_PROJECT_ROOT: PROJECT_ROOT,
             GP_THREAD_NAME: thread
         }, process.env),
-        stdio: [0, 1, 2, 'ipc']
+        stdio: [0, 1, 2, 'ipc'],
+        execArgv: [
+            // '--debug-brk=' + ++port
+        ]
     })
     threads[thread].name = thread
     threads[thread].killer = {}
