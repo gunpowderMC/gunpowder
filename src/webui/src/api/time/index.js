@@ -6,7 +6,8 @@
  * project for specific handling instructions
  */
 const db = require('../../../../db'),
-    moment = require('moment')
+    moment = require('moment'),
+    d = require('../../../../util/d')
 
 function unixToJSON(unix) {
     return moment(unix, 'X').toJSON()
@@ -24,24 +25,36 @@ function timeFormatter(r) {
     })
     return payload
 }
+
+function find(uuid, start, end) {
+    let query = {},
+        sub = {}
+    if (uuid) query.uuid = uuid
+    if (start) sub.$gte = start
+    if (end) sub.$lte = end
+
+    if (Object.keys(sub).length > 1) {
+        query.$or = [
+            {start: sub},
+            {end: sub}
+        ]
+    }
+
+    return db.times.find(query).then(r => timeFormatter(r))
+}
 module.exports = router => {
     router.get('/time', (req, res) => {
         const cutOff = moment().days(-3).unix()
-        db.times.find({
-            $or: [
-                {end: {$gt: cutOff}},
-                {start: {$gt: cutOff}}
-            ]
-        }).then(r => res.json(timeFormatter(r)))
+        find(false, cutOff).then(r => res.json(r))
+    })
+    router.get('/time/:start/:end', (req, res) => {
+        find(false, req.params.start - 0, req.params.end - 0).then(r => res.json(r))
     })
     router.get('/time/:uuid', (req, res) => {
         const cutOff = moment().days(-3).unix()
-        db.times.find({
-            uuid: req.params.uuid,
-            $or: [
-                {end: {$gt: cutOff}},
-                {start: {$gt: cutOff}}
-            ]
-        }).then(r => res.json(timeFormatter(r)))
+        find(req.params.uuid, cutOff).then(r => res.json(r))
+    })
+    router.get('/time/:uuid/:start/:end', (req, res) => {
+        find(req.params.uuid, req.params.start - 0, req.params.end - 0).then(r => res.json(r))
     })
 }
