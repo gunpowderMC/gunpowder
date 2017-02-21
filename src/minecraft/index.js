@@ -13,7 +13,8 @@ const d = require('../util/d'),
     fs = require('fs'),
     child_process = require('child_process'),
     path = require('path'),
-    db = require('../db')
+    db = require('../db'),
+    moment = require('moment')
 
 const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
         ? process.env.MINECRAFT_JAR
@@ -141,9 +142,11 @@ function next(e) {
                                 } else {
                                     user = {
                                         uuid: uuidCache[res.username],
-                                        username: res.username
+                                        username: res.username,
+                                        firstSeen: moment().unix()
                                     }
                                 }
+                                user.lastSeen = moment().unix()
                                 db.users.update({uuid: uuidCache[res.username]}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
                             })
                             sendConsole(lines[i])
