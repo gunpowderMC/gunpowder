@@ -42,3 +42,11 @@
 .wrow > * {
     padding: 0;
 }
+
+.user_data > li > img {
+    width: 2em;
+}
+
+.user_data > li {
+    font-size: medium;
+}

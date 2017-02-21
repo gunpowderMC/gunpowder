@@ -11,7 +11,9 @@ block content
                             img.img-responsive.avatar-view(src='https://mcapi.ca/avatar/' + player.username, alt='Avatar')
                         h3 #{player.username}
                         ul.list-unstyled.user_data
-                            li #{player.title}
+                            li
+                                img(src='/img/ico/rank.svg' style='width: 2em;' data-placement="left" data-toggle="tooltip" data-html="true" title="Rank")
+                                | #{player.title}
                     .col-md-9.col-sm-9.col-xs-12
                         .profile_title
                             .col-md-12
