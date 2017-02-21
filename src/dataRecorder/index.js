@@ -19,7 +19,7 @@ function endPlayer(index) {
     db.times.findOne({
         uuid: player.uuid,
         end: {
-            $gt: moment().minutes(-5).unix()
+            $gt: moment(player.start, 'X').minutes(-5).unix()
         }
     }).then(time => {
         if (time) {
