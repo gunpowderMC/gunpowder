@@ -4,5 +4,5 @@ A server wrapper and control panel for Minecraft
 
 ## Contributers
 
-- KaidenP *(lead programmer)*
-- 1stDestroyer *(Image design/guidance)*
+- KaidenP *(Lead programmer)*
+- 1stDestroyer *(Graphic design/guidance)*
