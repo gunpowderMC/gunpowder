@@ -1,4 +1,5 @@
 #!/bin/bash
+npm install
 docker-compose down
 docker-compose up -d --build
 chown :users run -R
