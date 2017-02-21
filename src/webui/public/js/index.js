@@ -15,3 +15,15 @@ $(() => {
         });
     })
 })
+function dateOp(d, days) {
+    d.setDate(d.getDate() + days);
+    return Math.floor(d.valueOf() / 1000)
+}
+$('#time').change(function () {
+    let start = dateOp(new Date(this.value), -1),
+        end = dateOp(new Date(this.value), 1)
+    $.get(`/api/time/${start}/${end}`, undefined, time => {
+        timeline.setItems(time)
+        timeline.fit()
+    })
+})
