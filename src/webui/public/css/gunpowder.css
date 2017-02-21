@@ -17,3 +17,28 @@
 .avatar-view {
     width: 100%;
 }
+
+.wwidget {
+    height: 15em;
+    display: flex;
+    flex-flow: column;
+    margin: 0 3px;
+    padding: 7px;
+}
+
+.wwidgetDouble {
+    height: 30em;
+}
+
+.wwidgetAuto {
+    flex: 0 1 auto;
+}
+
+.wwidgetRemaining {
+    flex: 1 1 auto;
+    overflow-y: scroll;
+}
+
+.wrow > * {
+    padding: 0;
+}

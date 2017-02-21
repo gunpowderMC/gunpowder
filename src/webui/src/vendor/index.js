@@ -15,4 +15,6 @@ module.exports = app => {
     app.use('/css', express.static(path.join(PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'css')))
     app.use('/js', express.static(path.join(PROJECT_ROOT, 'node_modules', 'jquery.terminal', 'js')))
     app.use('/js/keyboardevent-key-polyfill', express.static(path.join(PROJECT_ROOT, 'node_modules', 'keyboardevent-key-polyfill')))
+
+    app.use('/vendor/vis', express.static(path.join(PROJECT_ROOT, 'node_modules/vis/dist')))
 }

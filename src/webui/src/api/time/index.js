@@ -18,7 +18,8 @@ function timeFormatter(r) {
             start: unixToJSON(rr.start),
             end: unixToJSON(rr.end),
             group: rr.uuid,
-            content: rr.username
+            content: rr.username,
+            title: rr.username
         })
     })
     return payload

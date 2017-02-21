@@ -1,18 +1,28 @@
 extends layout
 block head
-    link(href='/css/gunpowder.css', rel='stylesheet')
+    link(href='/vendor/vis/vis.min.css', rel='stylesheet')
+
 block content
     h2 Welcome #{user.username}!
-    .row
-        .col-md-2.tile-stats
-            h4 Online Players
-            ul
-                each player in players
-                    li #{player}
+    .row.wrow
+        .col-md-10
+            .tile-stats.wwidget.wwidgetDouble
+                h4 Recent Player History
+                #playerTimes(style='height: 100%;')
+        .col-md-2
+            .tile-stats.wwidget
+                h4 Server Management
+                a.btn.btn-danger.row.max-width.widget-btn(href='/server/stop') Stop
+                a.btn.btn-warning.row.max-width.widget-btn(href='/server/restart') Restart
+                a.btn.btn-success.row.max-width.widget-btn(href='/server/start') Start
+        .col-md-2
+            .tile-stats.wwidget
+                h4 Online Players
+                ul.wwidgetRemaining
+                    each player in players
+                        li
+                            a(href='/player/' + player.uuid) #{player.username}
 
-
-        .col-md-2.tile-stats
-            h4 Server Management
-            a.btn.btn-danger.row.max-width.widget-btn(href='/server/stop') Stop
-            a.btn.btn-warning.row.max-width.widget-btn(href='/server/restart') Restart
-            a.btn.btn-success.row.max-width.widget-btn(href='/server/start') Start
+block foot-scripts
+    script(src='/vendor/vis/vis.min.js')
+    script(src='/js/index.js')

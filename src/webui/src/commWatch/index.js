@@ -14,11 +14,14 @@ module.exports = class extends EventEmitter {
         process.on('message', (msg, sendHandle) => {
             switch (msg.act) {
                 case 'login':
-                    this.players.push(msg.username)
+                    this.players.push({
+                        username: msg.username,
+                        uuid: msg.uuid
+                    })
                     break
                 case 'logout':
                     this.players.forEach((player, index) => {
-                        if (player === msg.username) this.players.splice(index, 1)
+                        if (player.username === msg.username) this.players.splice(index, 1)
                     })
                     break
                 case 'start':
