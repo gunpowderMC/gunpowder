@@ -1,3 +1,7 @@
+.right_col {
+    min-height: 100vh !important;
+}
+
 .max-width {
     width: 100%;
 }

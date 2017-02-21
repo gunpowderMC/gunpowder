@@ -27,6 +27,7 @@ function endPlayer(index) {
         } else {
             db.times.insert({
                 uuid: player.uuid,
+                username: player.username,
                 start: player.start,
                 end: player.end
             })
@@ -38,6 +39,7 @@ process.on('message', (msg, sendHandle) => {
         case 'login':
             players.push({
                 uuid: msg.uuid,
+                username: msg.username,
                 start: moment().unix()
             })
             break

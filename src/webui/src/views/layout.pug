@@ -14,7 +14,7 @@ html(lang='en')
                 include nav-top
                 // /top navigation
                 // page content
-                .right_col(role='main', style='height: 100vh')
+                .right_col(role='main')
                     if alerts && alerts.length > 0
                         each alert in alerts
                             div(class=`alert alert-dismissable alert-${alert.type}` role='alert')

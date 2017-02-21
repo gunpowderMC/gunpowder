@@ -15,5 +15,6 @@ module.exports = {
     notifications: [],
     homes: [],
     disabled: false,
-    player: true
+    player: true,
+    title: 'Guest'
 }
