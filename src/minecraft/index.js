@@ -113,8 +113,7 @@ function next(e) {
                 })
             }
 
-            let buf = '',
-                auths = []
+            let buf = ''
             return function (data) {
                 buf += data
                 const lines = buf.split('\n')
@@ -123,17 +122,11 @@ function next(e) {
                     switch (res.act) {
                         case 'logout':
                         case 'auth':
-                            auths.push(res)
                             sendConsole(lines[i])
                             send(res)
                             break
                         case 'login':
-                            let thisAuth
-                            auths.forEach((auth, index) => {
-                                if (auth.username === res.username) thisAuth = auths.splice(index, 1)[0]
-                            })
-                            if (typeof thisAuth !== "undefined") {
-                                db.users.find({uuid: thisAuth.uuid}).then(user => {
+                            db.users.find({uuid: uuidCache[res.username]}).then(user => {
                                     if (user.length === 1) {
                                         user = user[0]
                                         if (user.username !== res.username) {
@@ -153,9 +146,6 @@ function next(e) {
                                     }
                                     db.users.update({uuid: thisAuth.uuid}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
                                 })
-                            } else {
-                                d("WTF. USER LOGGED IN WITHOUT AUTH. HELP.")
-                            }
                             sendConsole(lines[i])
                             send(res)
                             break
