@@ -18,8 +18,8 @@ function timeFormatter(r) {
             start: unixToJSON(rr.start),
             end: unixToJSON(rr.end),
             group: rr.uuid,
-            content: rr.username,
-            title: rr.username
+            content: `<a href="/player/${rr.uuid}">${rr.username}</a>`,
+            title: `<a href="/player/${rr.uuid}">${rr.username}</a>`
         })
     })
     return payload
