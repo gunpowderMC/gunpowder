@@ -238,7 +238,7 @@ db.getSecret(s => {
                                         users: users
                                     })
                                 })
-                            } else res.render('user', {
+                            } else res.render('settings', {
                                 title: 'Edit: ' + action[1],
                                 user: req.user,
 
@@ -248,7 +248,7 @@ db.getSecret(s => {
                         })
                         break
                     case 'new':
-                        res.render('user', {
+                        res.render('settings', {
                             title: 'Edit: ' + action[1],
                             user: req.user,
 
@@ -283,7 +283,7 @@ db.getSecret(s => {
         }
     })
     app.get('/settings', ifAuth, function (req, res) {
-        res.render('user', {
+        res.render('settings', {
             title: 'Edit: ' + req.user.username,
             user: req.user,
 
@@ -565,6 +565,19 @@ db.getSecret(s => {
             }
             res.redirect('/')
         }
+    })
+
+    app.get('/player/:uuid', function (req, res) {
+        db.users.findOne({uuid: req.params.uuid}).then(r => {
+            if (r === null) res.redirect('/')
+            else {
+                res.render('player', {
+                    title: r.username + '\'s Profile',
+                    user: req.user,
+                    player: r
+                })
+            }
+        })
     })
 
     server.listen(8080, function () {

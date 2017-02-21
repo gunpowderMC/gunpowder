@@ -16,7 +16,7 @@ const d = require('../util/d'),
     db = require('../db')
 
 const jar = typeof process.env.MINECRAFT_JAR !== "undefined"
-    ? process.env.MINECRAFT_JAR
+        ? process.env.MINECRAFT_JAR
         : 'minecraft.jar',
     playerSchema = require('../db/schema').Player
 
@@ -127,25 +127,25 @@ function next(e) {
                             break
                         case 'login':
                             db.users.find({uuid: uuidCache[res.username]}).then(user => {
-                                    if (user.length === 1) {
-                                        user = user[0]
-                                        if (user.username !== res.username) {
-                                            send({
-                                                act: 'playerNameChange',
-                                                newName: res.username,
-                                                oldName: user.username,
-                                                uuid: user.uuid
-                                            })
-                                            user.usernames.push(user.username)
-                                        }
-                                    } else {
-                                        user = {
-                                            uuid: thisAuth.uuid,
-                                            username: res.username
-                                        }
+                                if (user.length === 1) {
+                                    user = user[0]
+                                    if (user.username !== res.username) {
+                                        send({
+                                            act: 'playerNameChange',
+                                            newName: res.username,
+                                            oldName: user.username,
+                                            uuid: user.uuid
+                                        })
+                                        user.usernames.push(user.username)
                                     }
-                                    db.users.update({uuid: thisAuth.uuid}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
-                                })
+                                } else {
+                                    user = {
+                                        uuid: uuidCache[res.username],
+                                        username: res.username
+                                    }
+                                }
+                                db.users.update({uuid: uuidCache[res.username]}, {$set: Object.assign({}, playerSchema, user)}, {upsert: true})
+                            })
                             sendConsole(lines[i])
                             send(res)
                             break

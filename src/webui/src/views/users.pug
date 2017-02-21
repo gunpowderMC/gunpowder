@@ -10,7 +10,11 @@ block content
         tbody
             each u in users
                 tr
-                    td #{u.username}
+                    td
+                        if u.uuid
+                            a(href='/player/' + u.uuid) #{u.username}
+                        else
+                            | #{u.username}
                     td
                         if !!u.disabled
                             span.label.label-danger Disabled
@@ -30,4 +34,4 @@ block content
                             a.btn.btn-warning(href=`/users/${u.disabled ? 'enable' : 'disable'}/${u.username}`) #{u.disabled ? 'Enable' : 'Disable'}
 
                         a.btn.btn-default(href=`/users/edit/${u.username}`) Edit
-    a.btn.btn-default(href='/users/new') New User
+    //a.btn.btn-default(href='/users/new') New User

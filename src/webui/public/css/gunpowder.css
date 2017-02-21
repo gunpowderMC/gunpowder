@@ -9,3 +9,7 @@
 .float-right {
     float: right;
 }
+
+.avatar-view {
+    width: 100%;
+}
