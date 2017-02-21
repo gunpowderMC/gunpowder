@@ -38,7 +38,7 @@ function checkKind(msg) {
             username: result[1],
             uuid: result[2]
         }
-    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:[0-9]+?\.[0-9]+?, ){2}[0-9]+?\.[0-9]+?)\)$/)) {
+    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16})\[\/((?:[0-9]{1,3}\.){3}[0-9]{1,3}):[0-9]+?] logged in with entity id [0-9]+? at \(((?:(?:|-)[0-9]+?\.[0-9]+?, ){2}(?:|-)[0-9]+?\.[0-9]+?)\)$/)) {
         // Player Login
         return {
             act: 'login',
