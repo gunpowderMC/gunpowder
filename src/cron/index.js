@@ -19,7 +19,7 @@ let jobs = []
 function reload() {
     while (jobs.length > 0) jobs.shift().stop()
 
-    db.cron.find({}).then(dbJobs => {
+    db.cron.find({disabled: {$ne: true}}).then(dbJobs => {
         dbJobs.forEach(dbJob => {
             if (!dbJob.disabled) try {
                 let func
@@ -36,7 +36,7 @@ function reload() {
                         }
                         break
                     case 'backup':
-                        func = () => backup(dbJob.backupName)
+                        func = () => backup(dbJob.backupName, dbJob)
                         break
                     default:
                         throw new Error('Invalid type: ' + dbJob.type)

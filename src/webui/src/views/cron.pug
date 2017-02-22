@@ -22,7 +22,7 @@ block content
             .form-group
                 label.col-xs-3.control-label(for='command') Command
                 .col-xs-9
-                    input.form-control#command(required name='command' value=(cron.command || ''))
+                    input.form-control#command(name='command' value=(cron.command || ''))
         #backup-section
             .form-group
                 label.col-xs-3.control-label(for='backupName') Backup Name
