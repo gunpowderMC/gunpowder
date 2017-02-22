@@ -91,7 +91,9 @@ function next(e) {
             ]
         )
 
-
+        mc.stdin.setEncoding('utf8')
+        mc.stdout.setEncoding('utf8')
+        mc.stderr.setEncoding('utf8')
         mc.stdout.on('data', buffOut())
         mc.stderr.on('data', buffOut())
 
@@ -164,6 +166,7 @@ function next(e) {
         send({
             act: 'start'
         })
+
         return mc
     }
 

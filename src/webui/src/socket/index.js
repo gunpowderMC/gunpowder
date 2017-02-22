@@ -6,6 +6,8 @@
  * project for specific handling instructions
  */
 
+const d = require('../../../util/d')
+
 module.exports = function (server) {
     const io = require('socket.io')(server),
         jwt = require('jsonwebtoken'),
@@ -27,13 +29,15 @@ module.exports = function (server) {
     })
 
     io.on('connection', function (socket) {
-        socket.on('command', cmd => process.send({
-            dest: 'minecraft',
-            msg: {
-                act: 'command',
-                cmd: cmd
-            }
-        }))
+        socket.on('command', cmd => {
+            process.send({
+                dest: 'minecraft',
+                msg: {
+                    act: 'command',
+                    cmd: cmd
+                }
+            })
+        })
         history.forEach(t => socket.emit('console', t))
     })
 
