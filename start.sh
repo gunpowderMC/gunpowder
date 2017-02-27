@@ -24,7 +24,7 @@ docker run -d --restart always --name ${NAME} \
   -p "${MC_PORT:-25565}:25565" \
   -p "${MC_PORT:-25565}:25565/udp" \
   --net gunpowder --ip ${BASEIP}3 \
-  -p 80:8080 \
+  -p 8080:8080 \
   -v $PWD/work:/work \
   -v $PWD:/app-dev \
   --link ${MONGO}:mongod \

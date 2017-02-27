@@ -1,5 +1,8 @@
 FROM ubuntu:16.04
-
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 RUN apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y install curl && \
     curl -sL https://deb.nodesource.com/setup_7.x | bash - && apt-get -y install nodejs && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
