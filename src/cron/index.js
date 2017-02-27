@@ -12,7 +12,16 @@ global.PROJECT_ROOT = process.env.GP_PROJECT_ROOT || path.join(__dirname, '..', 
 const db = require('../db'),
     d = require('../util/d'),
     CronJob = require('cron').CronJob,
-    backup = require('../backup')
+    backup = function (name, deletionPolicy) {
+        process.send({
+            dest: 'backup',
+            msg: {
+                act: 'backup',
+                name: name,
+                deletionPolicy: deletionPolicy
+            }
+        })
+    }
 
 let jobs = []
 
@@ -36,7 +45,10 @@ function reload() {
                         }
                         break
                     case 'backup':
-                        func = () => backup(dbJob.backupName, dbJob)
+                        func = () => {
+                            d('Starting backup' + dbJob.backupName)
+                            backup(dbJob.backupName, dbJob)
+                        }
                         break
                     default:
                         throw new Error('Invalid type: ' + dbJob.type)

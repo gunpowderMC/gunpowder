@@ -11,8 +11,8 @@ const child_process = require('child_process'),
     d = require('./util/d'),
     moment = require('moment')
 
-module.exports = function (name, deletionPolicy) {
-    const backupDir = path.join(PROJECT_ROOT, 'run', 'backup'),
+function backup(name, deletionPolicy) {
+    const backupDir = '/work/backup',
         suffix = ((typeof name === "string" && name !== '') ? '-' + name : '') + '.tar.xz',
         fileName = path.join(backupDir, (new Date()).toJSON()) + suffix
     fs.readdir(backupDir, (err, files) => {
@@ -105,3 +105,14 @@ module.exports = function (name, deletionPolicy) {
         md5.on('exit', onceDone)
     })
 }
+
+setInterval(() => {
+}, 9999999999)
+
+process.on('message', msg => {
+    switch (msg.act) {
+        case 'backup':
+            backup(msg.name, msg.deletionPolicy)
+            break
+    }
+})

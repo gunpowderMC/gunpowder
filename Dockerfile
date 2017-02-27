@@ -12,9 +12,13 @@ RUN apt-get update && apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
 
-#USER 1000
+RUN mkdir -p /app /work
+ADD package.json /app/package.json
+RUN cd /app && npm install
+ADD . /app
+
 EXPOSE 25565
 EXPOSE 25565/udp
 EXPOSE 8080
-WORKDIR /app/run/work
+WORKDIR /work
 CMD ["/usr/bin/node", "/app/index.js"]

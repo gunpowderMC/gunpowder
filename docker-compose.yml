@@ -6,7 +6,7 @@ services:
     ports:
      - "127.0.0.1:${MONGO_PORT:-27017}:27017"
     volumes:
-     - ./run/db:/data/db
+     - ./run/mongo:/data/db
     group_add:
      - users
   gunpowder:
@@ -15,61 +15,10 @@ services:
      - mongod
     build: .
     ports:
+     - 8080:8080
      - "${MC_PORT:-25565}:25565"
      - "${MC_PORT:-25565}:25565/udp"
     volumes:
-     - ./:/app
-#    environment:
-#     - "VIRTUAL_HOST=${HOST:-localhost}"
-#     - VIRTUAL_PORT=8080
-#     - "LETSENCRYPT_HOST=${HOST:-localhost}"
-#     - "LETSENCRYPT_EMAIL=${EMAIL:-null@null.net}"
+     - ./run/gunpowder:/work
     group_add:
      - users
-    labels:
-      - nginxProxy.enabled
-#      - nginxProxy.https
-#      - nginxProxy.httpsOnly
-      - nginxProxy.domains=${HOST:-localhost}
-      - nginxProxy.email=${EMAIL:-null@null.net}
-  sftp:
-    image: atmoz/sftp
-    restart: always
-    ports:
-     - "${SSH_PORT:-2222}:22"
-    volumes:
-     - './run/work/minecraft:/home/mc/minecraft'
-     - '/etc/ssh/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key:ro'
-     - '/etc/ssh/ssh_host_rsa_key.pub:/etc/ssh/ssh_host_rsa_key.pub:ro'
-     - '/etc/ssh/ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro'
-     - '/etc/ssh/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro'
-     - './run/backup:/home/mc/backup'
-     - './run/authorized_keys:/home/mc/.ssh/authorized_keys'
-    command: mc::1000
-    group_add:
-     - users
-#  nginx-proxy:
-#    restart: always
-#    volumes:
-#     - ./run/certs:/etc/nginx/certs:ro
-#     - /etc/nginx/vhost.d
-#     - /usr/share/nginx/html
-#
-#     - /var/run/docker.sock:/tmp/docker.sock:ro
-#    image: jwilder/nginx-proxy
-#    ports:
-#     - 80:80
-#     - 443:443
-#    group_add:
-#     - users
-#  letsencrypt-nginx-proxy-companion:
-#    restart: always
-#    image: jrcs/letsencrypt-nginx-proxy-companion
-#    volumes_from:
-#     - nginx-proxy
-#    volumes:
-#     - ./run/certs:/etc/nginx/certs:rw
-#
-#     - /var/run/docker.sock:/var/run/docker.sock:ro
-#    group_add:
-#     - users
