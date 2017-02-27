@@ -50,6 +50,13 @@ function checkKind(msg) {
 
             totalPlayers: ++players
         }
+    } else if (result = msg.match(/^^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: ((?:§(?=[\d\w])|[\w ]){0,14}?(?:§[\d\w]|[\d\w ]))(\w{3,16})(?:§r|) joined the game$/)) {
+        return {
+            act: 'join',
+            username: result[2],
+            uuid: uuidCache[result[2]],
+            title: result[1].replace(/(?:§[\d\w])| /g, '')
+        }
     } else if (result = msg.match(/^^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (?:§(?=[\d\w])|[\w ]){0,14}?(?:§[\d\w]|[\d\w ])(\w{3,16})(?:§r|) left the game$/)) {
         // Player Logout
         let uuid = uuidCache[result[1]]
@@ -153,6 +160,10 @@ function next(e) {
                             })
                             sendConsole(lines[i])
                             send(res)
+                            break
+                        case 'join':
+                            db.users.update({uuid: res.uuid}, {$set: {title: res.title}})
+                            sendConsole(lines[i])
                             break
                         default:
                             sendConsole(lines[i])
