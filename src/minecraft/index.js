@@ -50,7 +50,7 @@ function checkKind(msg) {
 
             totalPlayers: ++players
         }
-    } else if (result = msg.match(/^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (\w{3,16}) left the game$/)) {
+    } else if (result = msg.match(/^^\[(?:(?:\d{2}):){2}\d{2}] \[Server thread\/INFO]: (?:§(?=[\d\w])|[\w ]){0,14}?(?:§[\d\w]|[\d\w ])(\w{3,16})(?:§r|) left the game$/)) {
         // Player Logout
         let uuid = uuidCache[result[1]]
         delete uuidCache[result[1]]
