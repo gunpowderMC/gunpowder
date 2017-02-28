@@ -96,7 +96,6 @@ function load(location, name) {
                     modules[dest].send(msg)
                 }
             }
-
             function gunpowder(dest, msg) {
                 process.send({
                     dest: dest,
