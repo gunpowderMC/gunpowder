@@ -75,10 +75,10 @@ function backup(name, deletionPolicy) {
     })
     d('Starting backup: ' + fileName)
     child_process.spawn('/bin/tar', [
-        `--exclude='${path.join(PROJECT_ROOT, 'run', 'backup')}'`,
+        `--exclude='${'/work/backup'}'`,
         '-chJf',
         fileName,
-        path.join(PROJECT_ROOT, 'run')
+        path.join('/work')
     ]).on('exit', () => {
         let done = 0
 
