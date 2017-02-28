@@ -25,7 +25,8 @@ let threads = {
     minecraft: '/src/minecraft',
     cron: '/src/cron',
     dataRecorder: '/src/dataRecorder',
-    backup: '/src/backup.js'
+    backup: '/src/backup.js',
+    modules: '/src/modules'
 }
 // let port = process.execArgv[0].split('=')[1]
 for (let thread in threads) {

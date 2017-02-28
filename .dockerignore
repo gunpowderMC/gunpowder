@@ -5,7 +5,7 @@
 *.swp
 
 # Work directory
-run
+work
 
 # Logs
 logs
