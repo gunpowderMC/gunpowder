@@ -103,7 +103,7 @@ function load(location, name) {
                 })
             }
         } catch (e) {
-            d('SEVERE error occured sending IPC massage "' + e.message + '" (this can be safely ignored during shutdown)')
+            d(`SEVERE error occured sending IPC massage of type ${msg.dest.type} to ${msg.dest.dest}: "${e.message}" (this can be safely ignored during shutdown)`)
         }
     })
 
