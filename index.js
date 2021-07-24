@@ -73,7 +73,7 @@ for (let thread in threads) {
                 threads[msg.dest].send(msg.msg, sendHandle)
             }
         } catch (e) {
-            d('SEVERE error occured sending IPC massage "' + e.message + '" (this can be safely ignored during shutdown)')
+            d(`SEVERE error occured sending IPC massage from thread ${thread} to ${msg.dest} "${e.message}" (this can be safely ignored during shutdown)`)
         }
     })
 }
